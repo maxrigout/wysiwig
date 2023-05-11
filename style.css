@@ -1,0 +1,97 @@
+/* The Modal (background) */
+.mmodal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 0; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.mmodal-content {
+	background-color: #fefefe;
+	margin: 15% auto; /* 15% from the top and centered */
+	padding: 20px;
+	border: 1px solid #888;
+	width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.mclose {
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+
+.mclose:hover,
+.mclose:focus {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+
+
+.title-bar.flex-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.title-bar.left {
+	display: flex;
+	flex-direction: row;
+}
+
+.title-bar.right {
+	display: flex;
+	flex-direction: row;
+}
+
+.title-bar.flex-element {
+	margin: 10px
+}
+
+.title-bar.element.address {
+	display: flex;
+	flex-direction: row;
+}
+
+.title-bar.element.address p {
+	margin: 2px;
+}
+
+.title-bar.element.search {
+	display: flex;
+	flex-direction: row;
+}
+
+.title-bar.element.btn {
+
+}
+
+dialog {
+	width: 90%;
+}
+
+.folder-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.element-icon {
+	flex: 1;
+}
+
+.element-text {
+	margin: auto;
+	margin-left: 10px;
+	flex: 20;
+}
