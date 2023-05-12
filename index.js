@@ -1,14 +1,6 @@
-console.log("Hello!");
-
 const dialog = document.querySelector("#myDialog");
-// const dialogOkButton = document.querySelector("dialog > form > button");
 const root = dialog.querySelector("#dialog-root");
 const addressBar = ["/"];
-
-// dialogOkButton.addEventListener("click", () => {
-// 	console.log("closing...");
-// 	root.innerHTML = "";
-// })
 
 const fetchDocs = async () => {
 	return new Promise((resolve, reject) => {
@@ -26,22 +18,6 @@ const fetchDocs = async () => {
 		}, 500)
 	});
 }
-
-// var modal = document.getElementById("myModal");
-// // Get the <span> element that closes the modal
-// var span = document.getElementsByClassName("close")[0];
-
-// // When the user clicks on <span> (x), close the modal
-// span.onclick = function() {
-// 	modal.style.display = "none";
-// }
-  
-// // When the user clicks anywhere outside of the modal, close it
-// window.onclick = function(event) {
-// 	if (event.target == modal) {
-// 		modal.style.display = "none";
-// 	}
-// }
 
 
 // https://stackoverflow.com/questions/9068156/server-side-file-browsing
@@ -140,9 +116,9 @@ const renderTitleBar = () => {
 	</div>
 	<div class="title-bar flex-element right">
 	  <div class="title-bar element flex-element search flex-container">
-		<input placeholder="Search" id="title-bar-search" type="text">
 		<!-- search icon -->
 		<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.907 17.319a8 8 0 1 1 1.412-1.412c.013.011.026.023.038.036l4.35 4.35a1 1 0 0 1-1.414 1.414l-4.35-4.35a1.016 1.016 0 0 1-.036-.038zM11 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path></svg>
+		<input placeholder="Search" id="title-bar-search" type="text">
 	  </div>
 	  <div class="title-bar element flex-element btn add">
 		<button id="title-bar-button-add">
@@ -157,57 +133,22 @@ const renderTitleBar = () => {
 	  </div>
 	</div>
   </div>`
-// 	return `
-// <div class="image-picker dialog title-bar">
-// 	<div tabindex="-1" class="tam-navbar__main">
-// 			<span class="tam-icon tam-location__icon">
-// 				${drawFolder()}
-// 			</span>
-// 			<button aria-haspopup="true" type="button" data-alloy-tabstop="true" tabindex="-1" class="tam-location__button" aria-expanded="false">
-// 				<span class="tam-location__button-label">Files</span>
-// 				<span class="tam-icon">
-// 					<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-// 						<path d="M15.667 9.217a.773.773 0 0 1 1.1.02c.303.313.311.818.02 1.141L12.56 14.76c-.31.32-.81.32-1.12 0l-4.227-4.382a.843.843 0 0 1 .02-1.14.773.773 0 0 1 1.1-.02l3.667 3.8 3.667-3.8z"></path>
-// 					</svg>
-// 				</span>
-// 			</button>
-// 	</div>
-// 	<div tabindex="-1" class="tam-navbar__actions">
-// 		<div class="tam-search">
-// 			<input type="search" placeholder="Search" tabindex="-1" data-alloy-tabstop="true" class="tam-input-field tam-input-field--search">
-// 				<span class="tam-icon tam-search__icon">
-// 					<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-// 						<path d="M15.907 17.319a8 8 0 1 1 1.412-1.412c.013.011.026.023.038.036l4.35 4.35a1 1 0 0 1-1.414 1.414l-4.35-4.35a1.016 1.016 0 0 1-.036-.038zM11 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path>
-// 					</svg>
-// 				</span>
-// 			</input>
-// 		</div>
-// 		<button title="Upload/Create" aria-haspopup="true" type="button" data-alloy-tabstop="true" tabindex="-1" class="tam-button tam-button--icon" aria-expanded="false">
-// 			<span class="tam-icon">
-// 				<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-// 					<path d="M13 11h6a1 1 0 0 1 0 2h-6v6a1 1 0 0 1-2 0v-6H5a1 1 0 0 1 0-2h6V5a1 1 0 0 1 2 0v6z"></path>
-// 				</svg>
-// 			</span>
-// 		</button>
-// 		<button title="Close" type="button" data-alloy-tabstop="true" tabindex="-1" class="tam-button tam-button--icon tam-button--naked">
-// 			<span class="tam-icon">
-// 				<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-// 					<path d="M17.251 8.157L13.421 12l3.83 3.843a.996.996 0 0 1-1.408 1.408L12 13.421l-3.843 3.83a.996.996 0 0 1-1.408-1.408L10.579 12l-3.83-3.843A.996.996 0 0 1 8.157 6.75L12 10.579l3.843-3.83a.996.996 0 0 1 1.408 1.408z" fill-rule="evenodd"></path>
-// 				</svg>
-// 			</span>
-// 		</button>
-// 	</div>
-// </div>`;
 }
 
-const renderSingleImage = (image) => {
+const renderSingleImage = (image, index) => {
 	console.log("rendering image", image);
-	return `<div class="folder-container"><div class="element-icon">${drawFolder()}</div><div class="element-text">${image.name}</div></div>`
+	return `<div id="${index}" class="folder-container">
+				<div class="element-icon"></div>
+				<div class="element-text">${image.name}</div>
+			</div>`
 }
 
-const renderSingleFolder = (folder) => {
+const renderSingleFolder = (folder, index) => {
 	console.log("rendering folder", folder);
-	return `<div class="folder-container"><div class="element-icon">${drawFolder()}</div><div class="element-text">${folder.name}</div></div>`
+	return `<div id="${index}" class="folder-container">
+				<div class="element-icon">${drawFolder()}</div>
+				<div class="element-text">${folder.name}</div>
+			</div>`
 }
 
 const renderSingleElement = (element) => {
@@ -247,7 +188,16 @@ const renderDialog = (data) => {
 	const titleBar = renderTitleBar();
 	const content = renderContent(data);
 	const preview = renderPreview();
-	root.innerHTML = `${titleBar}${content}${preview}`
+	root.innerHTML = `${titleBar}
+	<div class="dialog-container">
+		<div class="dialog-content">
+			${content}
+		</div>
+		<div class="dialog-preview">
+			${preview}
+		</div>
+	</div>
+	<button>Ok</button>`
 	addListeners();
 }
 
@@ -256,18 +206,10 @@ const filePickerDialogHandler = (cb) => {
 	console.log(dialog);
 	console.log(dialog.clientHeight, dialog.clientWidth);
 	const docs = fetchDocs().then(renderDialog);
-	const btn = document.createElement("button");
-	btn.innerHTML = "cancel";
-	root.appendChild(btn);
-}
-
-const filePickerModalHandler = () => {
-	modal.style.display = "block";
 }
 
 const filePickerHandler = (cb, value, meta) => {
 	filePickerDialogHandler(cb);
-	// filePickerModalHandler(cb);
 	// fileBrowser(cb);
 };
 

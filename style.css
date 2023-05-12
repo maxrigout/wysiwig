@@ -37,6 +37,19 @@
 }
 
 
+.dialog-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.dialog-content {
+	border: solid;
+	flex: 3;
+}
+
+.dialog-preview {
+	display: none;
+}
 
 .title-bar.flex-container {
 	display: flex;
@@ -56,7 +69,7 @@
 }
 
 .title-bar.flex-element {
-	margin: 10px
+	margin: 2px
 }
 
 .title-bar.element.address {
@@ -86,8 +99,15 @@ dialog {
 	flex-direction: row;
 }
 
+.element-container {
+	margin: auto;
+}
+
 .element-icon {
+	margin-left: 10px;
 	flex: 1;
+	width: 40px;
+	height: 40px;
 }
 
 .element-text {
