@@ -115,3 +115,7 @@ dialog {
 	margin-left: 10px;
 	flex: 20;
 }
+
+.selected {
+	background-color: aqua;
+}
