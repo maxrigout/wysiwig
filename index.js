@@ -1,6 +1,6 @@
 const dialog = document.querySelector("#myDialog");
 const root = dialog.querySelector("#dialog-root");
-const addressBar = ["/"];
+const path = [];
 let selectedImage = null;
 let fetchedData;
 
@@ -158,11 +158,22 @@ const renderTitleBar = () => {
 }
 
 const selectElement = (e, i) => {
-	console.log(`selected element ${i}`);
-	console.log(e);
-	if (selectedImage !== null) {
-		selectedImage.node.classList.remove("selected");
+	if (selectedImage === null) {
+		selectedImage = { 
+			node: e,
+			index: i,
+			data: fetchedData[i],
+		 };
+		selectedImage.node.classList.add("selected");
+		return;
 	}
+	if (selectedImage.index === i) {
+		console.log(`element already selected`);
+		return;
+	}
+	console.log(`select element ${i}`);
+	console.log(e);
+	selectedImage.node.classList.remove("selected");
 	e.classList.add("selected");
 	selectedImage = { 
 		node: e,
@@ -200,10 +211,18 @@ const renderSingleElement = (element, index) => {
 	}
 }
 
-const renderContent = (data) => {
-	const content = data.map(renderSingleElement).join("<hr>");
-	return `
-	<div class="column">${content}</div>`
+const closeDialogForSuccess = (cb) => {
+	cb(selectedImage.data.localUrl, {title: selectedImage.data.name});
+	dialog.close();
+	root.innerHTML = "";
+}
+
+const renderContent = (data, cb) => {
+	const renderedContent = data.map((e, index) => renderSingleElement(e, index)).join("<hr>");
+	if (path.length === 0)
+		return `<div class="column">${renderedContent}</div>`
+	const renderedParentFolder = renderParentFolder();
+	return `<div class="column">${renderedParentFolder}${renderedContent}</div>`
 }
 
 const renderPreview = () => {
@@ -214,6 +233,7 @@ const addListeners = (cb) => {
 	const addBtn = root.querySelector("#title-bar-button-add");
 	const cancelBtn = root.querySelector("#title-bar-button-cancel");
 	const okButton = root.querySelector("#btn-ok");
+	const elementsContainer = root.querySelector(".column");
 
 	addBtn.onclick = () => {
 		fileBrowser((data, metadata) => {
@@ -228,16 +248,20 @@ const addListeners = (cb) => {
 	});
 	okButton.addEventListener("click", () => {
 		console.log(selectedImage);
-		cb(selectedImage.data.localUrl, {title: selectedImage.data.name});
-		dialog.close();
-	})
+		closeDialogForSuccess(cb);
+	});
+
+	elementsContainer.addEventListener("dblclick", () => {
+		console.log("db click");
+		closeDialogForSuccess(cb);
+	});
 }
 
 const renderDialog = (data, cb) => {
 	console.log(data);
 	fetchedData = data;
 	const titleBar = renderTitleBar();
-	const content = renderContent(data);
+	const content = renderContent(data, cb);
 	const preview = renderPreview();
 	root.innerHTML = `
 	${titleBar}
@@ -256,8 +280,7 @@ const renderDialog = (data, cb) => {
 const filePickerDialogHandler = (cb) => {
 	dialog.showModal();
 	console.log(dialog);
-	console.log(dialog.clientHeight, dialog.clientWidth);
-	const docs = fetchDocs().then(data => renderDialog(data, cb));
+	fetchDocs().then(data => renderDialog(data, cb));
 }
 
 const filePickerHandler = (cb, value, meta) => {
