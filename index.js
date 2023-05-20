@@ -34,6 +34,114 @@ const rootFiles = [
 		name: "bird.png",
 		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
 		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
+		localUrl: "img/bird.jpeg",
 	}
 ]
 
@@ -228,8 +336,7 @@ const navigateUp = () => {
 const renderSingleImage = (image, index) => {
 	console.log("rendering image", image);
 	return `<div class="folder-container" onclick="selectElement(this, ${index});">
-				<div class="element-icon"><img alt="${image.name}"></div>
-				<div class="element-text">${image.name}</div>
+				<img src="${image.localUrl}" alt="${image.name}">${image.name}
 			</div>`
 }
 
@@ -250,8 +357,7 @@ const renderSingleElement = (element, index) => {
 
 const renderParentFolder = () => {
 	return `<div class="folder-container" onclick="navigateUp()">
-				<div class="element-icon">${svg.folder}</div>
-				<div class="element-text">parent</div>
+				${svg.folder}parent
 			</div>`;
 }
 
@@ -312,16 +418,20 @@ const renderDialogContent = (data, cb) => {
 	const content = renderContent(data, cb);
 	const preview = renderPreview();
 	root.innerHTML = `
-	${titleBar}
-	<div class="dialog-container">
-		<div class="dialog-content">
-			${content}
-		</div>
-		<div class="dialog-preview">
-			${preview}
-		</div>
+	<div class="dialog-header>
+		${titleBar}
 	</div>
-	<button id="btn-ok">Ok</button>`
+	<div class="dialog>
+		<div class="dialog-container">
+			<div class="dialog-content">
+				${content}
+			</div>
+			<div class="dialog-preview">
+				${preview}
+			</div>
+		</div>
+		<button id="btn-ok">Ok</button>
+	</div>`
 	addListeners(cb);
 }
 
