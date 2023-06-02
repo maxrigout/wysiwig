@@ -1,9 +1,17 @@
+const fileSelectedClass = "file-selected";
+
 const dialog = document.querySelector("#myDialog");
-const root = dialog.querySelector("#dialog-root");
+const dialogRoot = dialog.querySelector("#dialog-root");
+const dialogTitleBar = dialog.querySelector("#dialog-title-bar");
+const dialogFileList = dialog.querySelector("#dialog-file-list");
+const dialogFilePreview = dialog.querySelector("#dialog-file-preview");
+const dialogActionButtons = dialog.querySelector("#dialog-action-buttons");
+
 const path = [];
 let selectedElement = null;
 let fetchedData;
 let onDialogClose;
+const defaultDialogContent = dialogRoot.innerHTML;
 
 const svg = {
 	folder: `<svg viewBox="0 0 40 40"><g fill-rule="evenodd"><path d="M3.908 4h10.104c1.163 0 1.582.073 2.032.229.45.156.838.395 1.179.728.34.333.593.675 1.113 1.716L19 8H0v-.092c0-.866.162-1.547.467-2.117a3.18 3.18 0 0 1 1.324-1.324C2.36 4.162 3.042 4 3.908 4zM0 8h34.872c1.783 0 2.43.186 3.082.534.652.349 1.163.86 1.512 1.512.348.652.534 1.299.534 3.082v17.744c0 1.783-.186 2.43-.534 3.082a3.635 3.635 0 0 1-1.512 1.512c-.652.348-1.299.534-3.082.534H5.128c-1.783 0-2.43-.186-3.082-.534a3.635 3.635 0 0 1-1.512-1.512C.186 33.302 0 32.655 0 30.872V8z"></path></g></svg>`,
@@ -262,36 +270,37 @@ const renderTitleBar2 = () => {
 }
 
 const renderTitleBar = () => {
-	return `<div class="image-picker dialog title-bar flex-container">
-	<div class="title-bar flex-element left">
-	  <!-- draw the folder icon -->
-	  <div class="title-bar element flex-element icon">
-		${svg.folder}
-	  </div>
-	  <!-- draw the address bar -->
-	  <!-- should be able to navigate to parent folders upon clicking on an element -->
-	  <div class="title-bar element flex-element address flex-container">
-		<p>root</p><p>></p><p>media</p><p>></p><p>photos</p>
-	  </div>
-	</div>
-	<div class="title-bar flex-element right">
-	  <div class="title-bar element flex-element search flex-container">
-		<!-- search icon -->
-		${svg.search}
-		<input placeholder="Search" id="title-bar-search" type="text">
-	  </div>
-	  <div class="title-bar element flex-element btn add">
-		<button id="title-bar-button-add">
-		<!-- add icon -->
-		  ${svg.plus}
-		</button>
-	  </div>
-	  <div class="title-bar element flex-element btn close">
-		<button id="title-bar-button-cancel">
-			${svg.x}
-		</button>
-	  </div>
-	</div>
+	return `
+	<div>
+		<div>
+			<!-- draw the folder icon -->
+			<div>
+				${svg.folder}
+			</div>
+			<!-- draw the address bar -->
+			<!-- should be able to navigate to parent folders upon clicking on an element -->
+			<div>
+				<p>root</p><p>></p><p>media</p><p>></p><p>photos</p>
+			</div>
+		</div>
+		<div>
+	  		<div>
+				<!-- search icon -->
+				${svg.search}
+				<input placeholder="Search" id="title-bar-search" type="text">
+	  		</div>
+	  		<div>
+				<button id="title-bar-button-add">
+					<!-- add icon -->
+		  			${svg.plus}
+				</button>
+	  		</div>
+	  		<div>
+				<button id="title-bar-button-cancel">
+					${svg.x}
+				</button>
+	  		</div>
+		</div>
   </div>`
 }
 
@@ -302,7 +311,7 @@ const selectElement = (e, i) => {
 			index: i,
 			data: fetchedData[i],
 		 };
-		selectedElement.node.classList.add("selected");
+		selectedElement.node.classList.add(fileSelectedClass);
 		return;
 	}
 	if (selectedElement.index === i) {
@@ -311,8 +320,8 @@ const selectElement = (e, i) => {
 	}
 	console.log(`select element ${i}`);
 	console.log(e);
-	selectedElement.node.classList.remove("selected");
-	e.classList.add("selected");
+	selectedElement.node.classList.remove(fileSelectedClass);
+	e.classList.add(fileSelectedClass);
 	selectedElement = { 
 		node: e,
 		index: i,
@@ -335,16 +344,21 @@ const navigateUp = () => {
 // https://www.w3schools.com/howto/howto_css_image_gallery.asp
 const renderSingleImage = (image, index) => {
 	console.log("rendering image", image);
-	return `<div class="folder-container" onclick="selectElement(this, ${index});">
-				<img src="${image.localUrl}" alt="${image.name}">${image.name}
-			</div>`
+	// return `<div onclick="selectElement(this, ${index});">
+	// 			<img src="${image.localUrl}" alt="${image.name}">${image.name}
+	// 		</div>`
+	return `<div class="list-group-item d-flex justify-content-between align-items-start"
+	onclick="selectElement(this, ${index});">
+	<div class="ms-2 me-auto">
+		<div class="fw-bold">${image.name}</div>
+	</div>
+</div>`;
 }
 
 const renderSingleFolder = (folder, index) => {
 	console.log("rendering folder", folder, index);
-	return `<div class="folder-container" onclick="selectElement(this, ${index});">
-				<div class="element-icon">${svg.folder}</div>
-				<div class="element-text">${folder.name}</div>
+	return `<div onclick="selectElement(this, ${index});">
+				${svg.folder}${folder.name}
 			</div>`
 }
 
@@ -356,7 +370,7 @@ const renderSingleElement = (element, index) => {
 }
 
 const renderParentFolder = () => {
-	return `<div class="folder-container" onclick="navigateUp()">
+	return `<div onclick="navigateUp()">
 				${svg.folder}parent
 			</div>`;
 }
@@ -364,26 +378,26 @@ const renderParentFolder = () => {
 const closeDialogForSuccess = (cb) => {
 	cb(selectedElement.data.localUrl, {title: selectedElement.data.name});
 	dialog.close();
-	root.innerHTML = "";
+	dialogRoot.innerHTML = defaultDialogContent;
 }
 
 const renderContent = (data, cb) => {
 	const renderedContent = data.map((e, index) => renderSingleElement(e, index)).join("<hr>");
 	if (path.length === 0)
-		return `<div class="column">${renderedContent}</div>`
+		return `<div class="files-list">${renderedContent}</div>`
 	const renderedParentFolder = renderParentFolder();
-	return `<div class="column">${renderedParentFolder}<hr>${renderedContent}</div>`
+	return `<div class="files-list">${renderedParentFolder}<hr>${renderedContent}</div>`
 }
 
 const renderPreview = () => {
-	
+	return svg["folder"];
 }
 
 const addListeners = (cb) => {
-	const addBtn = root.querySelector("#title-bar-button-add");
-	const cancelBtn = root.querySelector("#title-bar-button-cancel");
-	const okButton = root.querySelector("#btn-ok");
-	const elementsContainer = root.querySelector(".column");
+	const addBtn = dialogRoot.querySelector("#title-bar-button-add");
+	const cancelBtn = dialogRoot.querySelector("#title-bar-button-cancel");
+	const okButton = dialogRoot.querySelector("#btn-ok");
+	const elementsContainer = dialogRoot.querySelector(".files-list");
 
 	addBtn.onclick = () => {
 		fileBrowser((data, metadata) => {
@@ -393,7 +407,7 @@ const addListeners = (cb) => {
 	}
 	cancelBtn.addEventListener("click", () => {
 		console.log("closing...");
-		root.innerHTML = "";
+		dialogRoot.innerHTML = defaultDialogContent;
 		dialog.close();
 	});
 
@@ -402,41 +416,39 @@ const addListeners = (cb) => {
 		closeDialogForSuccess(cb);
 	});
 
-	elementsContainer.addEventListener("dblclick", () => {
-		console.log("db click");
-		if (selectedElement.data.type === "folder")
-			navigateToFolder(selectedElement)
-		else
-			closeDialogForSuccess(cb);
-	});
+	// elementsContainer.addEventListener("dblclick", () => {
+	// 	console.log("db click");
+	// 	if (selectedElement.data.type === "folder")
+	// 		navigateToFolder(selectedElement)
+	// 	else
+	// 		closeDialogForSuccess(cb);
+	// });
 }
 
 const renderDialogContent = (data, cb) => {
 	console.log(data);
 	fetchedData = data;
-	const titleBar = renderTitleBar();
-	const content = renderContent(data, cb);
-	const preview = renderPreview();
-	root.innerHTML = `
-	<div class="dialog-header>
-		${titleBar}
-	</div>
-	<div class="dialog>
-		<div class="dialog-container">
-			<div class="dialog-content">
-				${content}
-			</div>
-			<div class="dialog-preview">
-				${preview}
-			</div>
-		</div>
-		<button id="btn-ok">Ok</button>
-	</div>`
+	dialogTitleBar.innerHTML = renderTitleBar();
+	dialogFileList.innerHTML = renderContent(data, cb);
+	dialogFilePreview.innerHTML = renderPreview();
+	// dialogRoot.innerHTML = `
+	// <div class="dialog-title-bar">
+	// ${titleBar}
+	// </div>
+	// <div class="dialog-content">
+	// 	<div class="dialog-file-list">
+	// 		${content}
+	// 	</div>
+	// 	<div class="dialog-file-preview">
+	// 		${preview}
+	// 	</div>
+	// </div>
+	// <button id="btn-ok">Ok</button>`
 	addListeners(cb);
 }
 
 const renderDialog = (cb, path) => {
-	root.innerHTML = ``;
+	dialogRoot.innerHTML = ``;
 	fetchDocs(path)
 		.then(data => {
 			renderDialogContent(data, cb)
@@ -444,7 +456,7 @@ const renderDialog = (cb, path) => {
 		.catch(error => {
 			console.log(error.error)
 			const titleBar = renderTitleBar();
-			root.innerHTML = `${titleBar}`;
+			dialogRoot.innerHTML = `${titleBar}`;
 			addListeners(cb);
 		});
 }
@@ -453,7 +465,7 @@ const filePickerDialogHandler = (cb) => {
 	onDialogClose = cb;
 	dialog.showModal();
 	console.log(dialog);
-	renderDialog(cb, "root");
+	renderDialog(cb, "root" /* initial path/folder to load */);
 }
 
 const filePickerHandler = (cb, value, meta) => {
