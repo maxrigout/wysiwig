@@ -2,12 +2,12 @@ const fileSelectedClass = "file-selected";
 
 const dialog = document.querySelector("#myDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
-const dialogTitleBar = dialog.querySelector("#dialog-title-bar");
-const dialogFileList = dialog.querySelector("#dialog-file-list");
-const dialogFilePreview = dialog.querySelector("#dialog-file-preview");
+const dialogTitleBar = dialog.querySelector(".dialog-title-bar");
+const dialogFileList = dialog.querySelector(".dialog-file-list");
+const dialogFilePreview = dialog.querySelector(".dialog-file-preview");
 const dialogActionButtons = dialog.querySelector("#dialog-action-buttons");
 
-const path = [];
+let pathList = [];
 let selectedElement = null;
 let fetchedData;
 let onDialogClose;
@@ -183,10 +183,12 @@ const fetchDocs = async (url) => {
 }
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
-			if (data)
+			if (data) {
 				resolve(data);
-			else
+			}
+			else {
 				reject({error: "no data available"});
+			}
 		}, 500)
 	});
 }
@@ -223,85 +225,26 @@ const fileBrowser = (cb) => {
 	input.click();
 }
 
-const renderTitleBar2 = () => {
-	return `
-<div class="image-picker dialog title-bar">
-	<div tabindex="-1" class="tam-navbar__main">
-		<div tabindex="-1" class="tam-location tam-location--files">
-			<span class="tam-icon tam-location__icon">
-				${svg.folder}
-			</span>
-			<button aria-haspopup="true" type="button" data-alloy-tabstop="true" tabindex="-1" class="tam-location__button" aria-expanded="false">
-				<span class="tam-location__button-label">Files</span>
-				<span class="tam-icon">
-					<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-						<path d="M15.667 9.217a.773.773 0 0 1 1.1.02c.303.313.311.818.02 1.141L12.56 14.76c-.31.32-.81.32-1.12 0l-4.227-4.382a.843.843 0 0 1 .02-1.14.773.773 0 0 1 1.1-.02l3.667 3.8 3.667-3.8z"></path>
-					</svg>
-				</span>
-			</button>
-		</div>
-	</div>
-	<div tabindex="-1" class="tam-navbar__actions">
-		<div class="tam-search">
-			<input type="search" placeholder="Search" tabindex="-1" data-alloy-tabstop="true" class="tam-input-field tam-input-field--search">
-				<span class="tam-icon tam-search__icon">
-					<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-						<path d="M15.907 17.319a8 8 0 1 1 1.412-1.412c.013.011.026.023.038.036l4.35 4.35a1 1 0 0 1-1.414 1.414l-4.35-4.35a1.016 1.016 0 0 1-.036-.038zM11 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path>
-					</svg>
-				</span>
-			</input>
-		</div>
-		<button title="Upload/Create" aria-haspopup="true" type="button" data-alloy-tabstop="true" tabindex="-1" class="tam-button tam-button--icon" aria-expanded="false">
-			<span class="tam-icon">
-				<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-					<path d="M13 11h6a1 1 0 0 1 0 2h-6v6a1 1 0 0 1-2 0v-6H5a1 1 0 0 1 0-2h6V5a1 1 0 0 1 2 0v6z"></path>
-				</svg>
-			</span>
-		</button>
-		<button title="Close" type="button" data-alloy-tabstop="true" tabindex="-1" class="tam-button tam-button--icon tam-button--naked">
-			<span class="tam-icon">
-				<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-					<path d="M17.251 8.157L13.421 12l3.83 3.843a.996.996 0 0 1-1.408 1.408L12 13.421l-3.843 3.83a.996.996 0 0 1-1.408-1.408L10.579 12l-3.83-3.843A.996.996 0 0 1 8.157 6.75L12 10.579l3.843-3.83a.996.996 0 0 1 1.408 1.408z" fill-rule="evenodd"></path>
-				</svg>
-			</span>
-		</button>
-	</div>
-</div>`;
+const renderTitleBar = () => {
+	return `<div class="vertical-center align-right">
+	${svg.search}
+</div>
+<input placeholder="Search" id="title-bar-search" type="text">
+<button id="title-bar-button-add">
+	${svg.plus}
+</button>
+<button id="title-bar-button-cancel">
+	${svg.x}
+</button>`
 }
 
-const renderTitleBar = () => {
-	return `
-	<div>
-		<div>
-			<!-- draw the folder icon -->
-			<div>
-				${svg.folder}
-			</div>
-			<!-- draw the address bar -->
-			<!-- should be able to navigate to parent folders upon clicking on an element -->
-			<div>
-				<p>root</p><p>></p><p>media</p><p>></p><p>photos</p>
-			</div>
-		</div>
-		<div>
-	  		<div>
-				<!-- search icon -->
-				${svg.search}
-				<input placeholder="Search" id="title-bar-search" type="text">
-	  		</div>
-	  		<div>
-				<button id="title-bar-button-add">
-					<!-- add icon -->
-		  			${svg.plus}
-				</button>
-	  		</div>
-	  		<div>
-				<button id="title-bar-button-cancel">
-					${svg.x}
-				</button>
-	  		</div>
-		</div>
-  </div>`
+const updatePreview = () => {
+	const filePreview = dialogFilePreview.querySelector(".file-preview");
+	if (selectedElement.data.type === "folder") {
+		filePreview.innerHTML = "";
+		return;
+	}
+	filePreview.innerHTML = `<img src="${selectedElement.data.url}">`
 }
 
 const selectElement = (e, i) => {
@@ -312,6 +255,7 @@ const selectElement = (e, i) => {
 			data: fetchedData[i],
 		 };
 		selectedElement.node.classList.add(fileSelectedClass);
+		updatePreview();
 		return;
 	}
 	if (selectedElement.index === i) {
@@ -319,7 +263,6 @@ const selectElement = (e, i) => {
 		return;
 	}
 	console.log(`select element ${i}`);
-	console.log(e);
 	selectedElement.node.classList.remove(fileSelectedClass);
 	e.classList.add(fileSelectedClass);
 	selectedElement = { 
@@ -327,30 +270,29 @@ const selectElement = (e, i) => {
 		index: i,
 		data: fetchedData[i],
 	 }
+	updatePreview();
 }
 
-const navigateToFolder = (element) => {
-	console.log(`navigating to folder`, element);
-	path.push(element.data.name);
-	renderDialog(onDialogClose, path.join("/"));
+const navigateToFolder = (folder) => {
+	selectedElement = null;
+	console.log(`navigating to folder`, folder);
+	pathList.push(folder.data.name);
+	renderDialog(onDialogClose, pathList.join("/"));
 }
 
 const navigateUp = () => {
-	path.pop();
-	const newPath = path.join("/");
+	selectedElement = null;
+	pathList.pop();
+	const newPath = pathList.join("/");
 	renderDialog(onDialogClose, newPath.length === 0 ? "root" : newPath);
 }
 
 // https://www.w3schools.com/howto/howto_css_image_gallery.asp
 const renderSingleImage = (image, index) => {
 	console.log("rendering image", image);
-	// return `<div onclick="selectElement(this, ${index});">
-	// 			<img src="${image.localUrl}" alt="${image.name}">${image.name}
-	// 		</div>`
-	return `<div class="list-group-item d-flex justify-content-between align-items-start"
-	onclick="selectElement(this, ${index});">
-	<div class="ms-2 me-auto">
-		<div class="fw-bold">${image.name}</div>
+	return `<div onclick="selectElement(this, ${index});">
+	<div>
+		<div>${image.name}</div>
 	</div>
 </div>`;
 }
@@ -358,8 +300,9 @@ const renderSingleImage = (image, index) => {
 const renderSingleFolder = (folder, index) => {
 	console.log("rendering folder", folder, index);
 	return `<div onclick="selectElement(this, ${index});">
-				${svg.folder}${folder.name}
-			</div>`
+	${svg.folder}
+	${folder.name}
+	</div>`
 }
 
 const renderSingleElement = (element, index) => {
@@ -378,26 +321,24 @@ const renderParentFolder = () => {
 const closeDialogForSuccess = (cb) => {
 	cb(selectedElement.data.localUrl, {title: selectedElement.data.name});
 	dialog.close();
+	pathList = [];
+	selectedElement = null;
 	dialogRoot.innerHTML = defaultDialogContent;
 }
 
 const renderContent = (data, cb) => {
 	const renderedContent = data.map((e, index) => renderSingleElement(e, index)).join("<hr>");
-	if (path.length === 0)
+	if (pathList.length === 0)
 		return `<div class="files-list">${renderedContent}</div>`
 	const renderedParentFolder = renderParentFolder();
 	return `<div class="files-list">${renderedParentFolder}<hr>${renderedContent}</div>`
 }
 
-const renderPreview = () => {
-	return svg["folder"];
-}
-
 const addListeners = (cb) => {
-	const addBtn = dialogRoot.querySelector("#title-bar-button-add");
-	const cancelBtn = dialogRoot.querySelector("#title-bar-button-cancel");
+	const addBtn = dialogTitleBar.querySelector("#title-bar-button-add");
+	const cancelBtn = dialogTitleBar.querySelector("#title-bar-button-cancel");
 	const okButton = dialogRoot.querySelector("#btn-ok");
-	const elementsContainer = dialogRoot.querySelector(".files-list");
+	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
 
 	addBtn.onclick = () => {
 		fileBrowser((data, metadata) => {
@@ -405,58 +346,46 @@ const addListeners = (cb) => {
 			console.log(metadata);
 		});
 	}
-	cancelBtn.addEventListener("click", () => {
+	cancelBtn.onclick = () => {
 		console.log("closing...");
-		dialogRoot.innerHTML = defaultDialogContent;
+		pathList = [];
+		selectedElement = null;
 		dialog.close();
-	});
+	};
 
-	okButton.addEventListener("click", () => {
+	okButton.onclick = () => {
 		console.log(selectedElement);
-		closeDialogForSuccess(cb);
-	});
+		if (selectedElement.data.type === "folder")
+			navigateToFolder(selectedElement)
+		else
+			closeDialogForSuccess(cb);
+	};
 
-	// elementsContainer.addEventListener("dblclick", () => {
-	// 	console.log("db click");
-	// 	if (selectedElement.data.type === "folder")
-	// 		navigateToFolder(selectedElement)
-	// 	else
-	// 		closeDialogForSuccess(cb);
-	// });
+	elementsContainer.addEventListener("dbclick", () => {
+		console.log("db click");
+		if (selectedElement.data.type === "folder")
+			navigateToFolder(selectedElement)
+		else
+			closeDialogForSuccess(cb);
+	});
 }
 
 const renderDialogContent = (data, cb) => {
 	console.log(data);
 	fetchedData = data;
-	dialogTitleBar.innerHTML = renderTitleBar();
 	dialogFileList.innerHTML = renderContent(data, cb);
-	dialogFilePreview.innerHTML = renderPreview();
-	// dialogRoot.innerHTML = `
-	// <div class="dialog-title-bar">
-	// ${titleBar}
-	// </div>
-	// <div class="dialog-content">
-	// 	<div class="dialog-file-list">
-	// 		${content}
-	// 	</div>
-	// 	<div class="dialog-file-preview">
-	// 		${preview}
-	// 	</div>
-	// </div>
-	// <button id="btn-ok">Ok</button>`
+	dialogFilePreview.querySelector(".file-preview").innerHTML = "";
 	addListeners(cb);
 }
 
 const renderDialog = (cb, path) => {
-	dialogRoot.innerHTML = ``;
 	fetchDocs(path)
 		.then(data => {
 			renderDialogContent(data, cb)
 		})
 		.catch(error => {
 			console.log(error.error)
-			const titleBar = renderTitleBar();
-			dialogRoot.innerHTML = `${titleBar}`;
+			pathList.pop();
 			addListeners(cb);
 		});
 }
