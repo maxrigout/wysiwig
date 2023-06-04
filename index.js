@@ -319,11 +319,12 @@ const renderParentFolder = () => {
 }
 
 const closeDialogForSuccess = (cb) => {
+	console.log("closing for success")
 	cb(selectedElement.data.localUrl, {title: selectedElement.data.name});
 	dialog.close();
 	pathList = [];
 	selectedElement = null;
-	dialogRoot.innerHTML = defaultDialogContent;
+	// dialogRoot.innerHTML = defaultDialogContent;
 }
 
 const renderContent = (data, cb) => {
