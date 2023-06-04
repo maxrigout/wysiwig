@@ -19,156 +19,236 @@ const svg = {
 	search: `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.907 17.319a8 8 0 1 1 1.412-1.412c.013.011.026.023.038.036l4.35 4.35a1 1 0 0 1-1.414 1.414l-4.35-4.35a1.016 1.016 0 0 1-.036-.038zM11 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path></svg>`,
 }
 
+const animalFiles = [
+	{
+		type: "folder",
+		name: "chats"
+	},
+	{
+		type: "folder",
+		name: "oiseaux"
+	},
+		{
+		type: "folder",
+		name: "chiens"
+	}
+];
+
+const catFiles = [
+	{
+		type: "jpeg",
+		name: "cat.jpeg",
+		url: "img/cats/cat.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "catz.jpg",
+		url: "img/cats/catz.jpg",
+	},
+	{
+		type: "jpg",
+		name: "domestic-cat.jpg",
+		url: "img/cats/domestic-cat.jpg",
+	},
+	{
+		type: "jpeg",
+		name: "kittens.jpeg",
+		url: "img/cats/kittens.jpeg",
+	},
+	{
+		type: "jpeg",
+		name: "cats-party.jpeg",
+		url: "img/cats/cats-party.jpeg",
+	},
+	{
+		type: "jpeg",
+		name: "black-cat-back.jpeg",
+		url: "img/cats/black-cat-back.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "cats1.jpg",
+		url: "img/cats/	cats1.jpg",
+	},
+	{
+		type: "jpg",
+		name: "kittens1.jpg",
+		url: "img/cats/kittens1.jpg",
+	},
+	{
+		type: "jpeg",
+		name: "egypt-kitty.jpeg",
+		url: "img/cats/egypt-kitty.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "white-cat-min.jpg",
+		url: "img/cats/white-cat-min.jpg",
+	},
+	{
+		type: "jpg",
+		name: "p07ryyyj.jpg",
+		url: "img/cats/p07ryyyj.jpg",
+	},
+];
+
+const dogFiles = [
+	{
+		type: "png",
+		name: "dog.png",
+		url: "img/dogs/dog.jpeg",
+	},
+	{
+		type: "png",
+		name: "zouzou.png",
+		url: "img/dogs/zouzou.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "dog-puppy-on-garden.jpg",
+		url: "img/dogs/dog-puppy-on-garden.jpg",
+	},
+	{
+		type: "png",
+		name: "angry_chihuahua.png",
+		url: "img/dogs/angry_chihuahua.png",
+	},
+	{
+		type: "jpg",
+		name: "fuffy-dog.jpg",
+		url: "img/dogs/fuffy-dog.jpg",
+	},
+];
+
+const birdFiles = [
+	{
+		type: "jpeg",
+		name: "bird2.jpeg",
+		url: "img/birds/bird2.jpeg",
+	},
+	{
+		type: "jpeg",
+		name: "bird.jpeg",
+		url: "img/birds/bird.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "Tanager-Shapiro.jpg",
+		url: "img/birds/Tanager-Shapiro.jpg",
+	},
+];
+
 const rootFiles = [
 	{
 		type: "folder",
 		name: "pictures"
 	},
 	{
-		type: "png",
-		name: "cat.png",
-		url: "https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg",
-		localUrl: "img/cat.jpeg",
+		type: "folder",
+		name: "animaux"
+	},
+	{
+		type: "jpeg",
+		name: "cat.jpeg",
+		url: "img/cats/cat.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "catz.jpg",
+		url: "img/cats/catz.jpg",
+	},
+	{
+		type: "jpg",
+		name: "domestic-cat.jpg",
+		url: "img/cats/domestic-cat.jpg",
+	},
+	{
+		type: "jpeg",
+		name: "kittens.jpeg",
+		url: "img/cats/kittens.jpeg",
+	},
+	{
+		type: "jpeg",
+		name: "cats-party.jpeg",
+		url: "img/cats/cats-party.jpeg",
+	},
+	{
+		type: "jpeg",
+		name: "black-cat-back.jpeg",
+		url: "img/cats/black-cat-back.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "cats1.jpg",
+		url: "img/cats/	cats1.jpg",
+	},
+	{
+		type: "jpg",
+		name: "kittens1.jpg",
+		url: "img/cats/kittens1.jpg",
+	},
+	{
+		type: "jpeg",
+		name: "egypt-kitty.jpeg",
+		url: "img/cats/egypt-kitty.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "white-cat-min.jpg",
+		url: "img/cats/white-cat-min.jpg",
+	},
+	{
+		type: "jpg",
+		name: "p07ryyyj.jpg",
+		url: "img/cats/p07ryyyj.jpg",
 	},
 	{
 		type: "png",
 		name: "dog.png",
-		url: "https://www.hartz.com/wp-content/uploads/2022/04/small-dog-owners-1.jpg",
-		localUrl: "img/dog.jpeg",
+		url: "img/dogs/dog.jpeg",
 	},
 	{
 		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
+		name: "zouzou.png",
+		url: "img/dogs/zouzou.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "dog-puppy-on-garden.jpg",
+		url: "img/dogs/dog-puppy-on-garden.jpg",
 	},
 	{
 		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
+		name: "angry_chihuahua.png",
+		url: "img/dogs/angry_chihuahua.png",
 	},
 	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
+		type: "jpg",
+		name: "fuffy-dog.jpg",
+		url: "img/dogs/fuffy-dog.jpg",
 	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	},
-	{
-		type: "png",
-		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	}
 ]
 
 const pictureFiles = [
 	{
 		type: "folder",
-		name: "folder1"
+		name: "goesnowhere"
 	},
 	{
 		type: "png",
 		name: "cat.png",
-		url: "https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg",
-		localUrl: "img/cat.jpeg",
+		url: "img/cat.jpeg",
 	},
 	{
 		type: "png",
 		name: "bird.png",
-		url: "https://cdn.download.ams.birds.cornell.edu/api/v1/asset/202984001/1800",
-		localUrl: "img/bird.jpeg",
-	}
+		url: "img/birds/bird.jpeg",
+	},
+	{
+		type: "png",
+		name: "bird.png",
+		url: "img/birds/bird.jpeg",
+	},
 ]
 
 const fetchDocs = async (url) => {
@@ -179,7 +259,15 @@ const fetchDocs = async (url) => {
 		data = pictureFiles;
 	} else if (url === "root/pictures/folder1") {
 		data = folder1Files;
-}
+	} else if (url === "root/animaux") {
+		data = animalFiles;
+	} else if (url === "root/animaux/chats") {
+		data = catFiles;
+	} else if (url === "root/animaux/chiens") {
+		data = dogFiles;
+	} else if (url === "root/animaux/oiseaux") {
+		data = birdFiles;
+	}
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			if (data) {
@@ -296,6 +384,14 @@ const renderSingleImage = (image, index) => {
 </div>`;
 }
 
+const renderSingleFile = (file, index) => {
+	switch (file.type) {
+		case "jpeg":
+		case "jpg":
+		case "png": return renderSingleImage(file, index);
+	}
+}
+
 const renderSingleFolder = (folder, index) => {
 	console.log("rendering folder", folder, index);
 	return `<div onclick="selectElement(this, ${index});">
@@ -305,10 +401,10 @@ const renderSingleFolder = (folder, index) => {
 }
 
 const renderSingleElement = (element, index) => {
-	switch (element.type) {
-		case "folder": return renderSingleFolder(element, index);
-		case "png": return renderSingleImage(element, index);
+	if (element.type === "folder") {
+		return renderSingleFolder(element, index);
 	}
+	return renderSingleFile(element, index);
 }
 
 const renderParentFolder = () => {
@@ -325,7 +421,7 @@ const closeDialog = () => {
 
 const closeDialogForSuccess = (cb) => {
 	console.log("closing for success")
-	cb(selectedElement.data.localUrl, {title: selectedElement.data.name});
+	cb(selectedElement.data.url, {title: selectedElement.data.name});
 	closeDialog();
 }
 
@@ -371,12 +467,14 @@ const addDialogListeners = (cb) => {
 const renderDialogContent = (data) => {
 	console.log(data);
 	fetchedData = data;
+	// potentially sort the data
+	// data.sort((e1, e2) => e1.name.localeCompare(e2.name));
 	dialogFileList.innerHTML = renderContent(data);
 	dialogFilePreview.querySelector(".file-preview").innerHTML = "";
 }
 
 const renderDialog = () => {
-	const path = "root" + (pathList.length == 0 ? "" : "/") + pathList.join("/");
+	const path = "root" + (pathList.length === 0 ? "" : "/") + pathList.join("/");
 	console.log(`loading ${path}`);
 	fetchDocs(path)
 		.then(data => {
@@ -424,7 +522,7 @@ const uploadHandler = (blobInfo, progress) => new Promise((resolve, reject) => {
   
 	  const json = JSON.parse(xhr.responseText);
   
-	  if (!json || typeof json.location != 'string') {
+	  if (!json || typeof json.location !== 'string') {
 		reject('Invalid JSON: ' + xhr.responseText);
 		return;
 	  }
