@@ -276,6 +276,7 @@ const selectElement = (e, i) => {
 const navigateToFolder = (folder) => {
 	selectedElement = null;
 	console.log(`navigating to folder`, folder);
+	dialogFileList.innerHTML = "";
 	pathList.push(folder.data.name);
 	renderDialog(onDialogClose, pathList.join("/"));
 }
@@ -324,7 +325,6 @@ const closeDialogForSuccess = (cb) => {
 	dialog.close();
 	pathList = [];
 	selectedElement = null;
-	// dialogRoot.innerHTML = defaultDialogContent;
 }
 
 const renderContent = (data, cb) => {
@@ -340,7 +340,7 @@ const addListeners = (cb) => {
 	const cancelBtn = dialogTitleBar.querySelector("#title-bar-button-cancel");
 	const okButton = dialogRoot.querySelector("#btn-ok");
 	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
-
+	
 	addBtn.onclick = () => {
 		fileBrowser((data, metadata) => {
 			console.log(data);
@@ -362,7 +362,7 @@ const addListeners = (cb) => {
 			closeDialogForSuccess(cb);
 	};
 
-	elementsContainer.addEventListener("dbclick", () => {
+	elementsContainer.addEventListener("dblclick", () => {
 		console.log("db click");
 		if (selectedElement.data.type === "folder")
 			navigateToFolder(selectedElement)
