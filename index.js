@@ -105,8 +105,8 @@ const dogFiles = [
 	},
 	{
 		type: "jpg",
-		name: "dog-puppy-on-garden.jpg",
-		url: "img/dogs/dog-puppy-on-garden.jpg",
+		name: "puppy-on-garden.jpg",
+		url: "img/dogs/puppy-on-garden.jpg",
 	},
 	{
 		type: "png",
@@ -214,8 +214,8 @@ const rootFiles = [
 	},
 	{
 		type: "jpg",
-		name: "dog-puppy-on-garden.jpg",
-		url: "img/dogs/dog-puppy-on-garden.jpg",
+		name: "puppy-on-garden.jpg",
+		url: "img/dogs/puppy-on-garden.jpg",
 	},
 	{
 		type: "png",
@@ -226,6 +226,21 @@ const rootFiles = [
 		type: "jpg",
 		name: "fuffy-dog.jpg",
 		url: "img/dogs/fuffy-dog.jpg",
+	},
+	{
+		type: "jpeg",
+		name: "bird2.jpeg",
+		url: "img/birds/bird2.jpeg",
+	},
+	{
+		type: "jpeg",
+		name: "bird.jpeg",
+		url: "img/birds/bird.jpeg",
+	},
+	{
+		type: "jpg",
+		name: "Tanager-Shapiro.jpg",
+		url: "img/birds/Tanager-Shapiro.jpg",
 	},
 ]
 
