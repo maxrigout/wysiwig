@@ -1,7 +1,8 @@
 class FilePickerDialog {
 
-	constructor(cb) {
+	constructor(cb, dialogSelector) {
 		this.cb = cb;
+		this.dialogSelector = dialogSelector;
 	}
 
 	show() {

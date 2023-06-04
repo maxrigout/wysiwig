@@ -10,7 +10,6 @@ const dialogActionButtons = dialog.querySelector("#dialog-action-buttons");
 let pathList = [];
 let selectedElement = null;
 let fetchedData;
-let onDialogClose;
 const defaultDialogContent = dialogRoot.innerHTML;
 
 const svg = {
@@ -176,9 +175,9 @@ const fetchDocs = async (url) => {
 	let data = null;
 	if (url === "root") {
 		data = rootFiles
-	} else if (url === "pictures") {
+	} else if (url === "root/pictures") {
 		data = pictureFiles;
-	} else if (url === "pictures/folder1") {
+	} else if (url === "root/pictures/folder1") {
 		data = folder1Files;
 }
 	return new Promise((resolve, reject) => {
@@ -278,14 +277,13 @@ const navigateToFolder = (folder) => {
 	console.log(`navigating to folder`, folder);
 	dialogFileList.innerHTML = "";
 	pathList.push(folder.data.name);
-	renderDialog(onDialogClose, pathList.join("/"));
+	renderDialog();
 }
 
 const navigateUp = () => {
 	selectedElement = null;
 	pathList.pop();
-	const newPath = pathList.join("/");
-	renderDialog(onDialogClose, newPath.length === 0 ? "root" : newPath);
+	renderDialog();
 }
 
 // https://www.w3schools.com/howto/howto_css_image_gallery.asp
@@ -319,15 +317,19 @@ const renderParentFolder = () => {
 			</div>`;
 }
 
+const closeDialog = () => {
+	console.log("closing dialog");
+	selectedElement = null;
+	dialog.close();
+}
+
 const closeDialogForSuccess = (cb) => {
 	console.log("closing for success")
 	cb(selectedElement.data.localUrl, {title: selectedElement.data.name});
-	dialog.close();
-	pathList = [];
-	selectedElement = null;
+	closeDialog();
 }
 
-const renderContent = (data, cb) => {
+const renderContent = (data) => {
 	const renderedContent = data.map((e, index) => renderSingleElement(e, index)).join("<hr>");
 	if (pathList.length === 0)
 		return `<div class="files-list">${renderedContent}</div>`
@@ -335,24 +337,19 @@ const renderContent = (data, cb) => {
 	return `<div class="files-list">${renderedParentFolder}<hr>${renderedContent}</div>`
 }
 
-const addListeners = (cb) => {
+const addDialogListeners = (cb) => {
 	const addBtn = dialogTitleBar.querySelector("#title-bar-button-add");
 	const cancelBtn = dialogTitleBar.querySelector("#title-bar-button-cancel");
 	const okButton = dialogRoot.querySelector("#btn-ok");
 	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
-	
+
 	addBtn.onclick = () => {
 		fileBrowser((data, metadata) => {
 			console.log(data);
 			console.log(metadata);
 		});
 	}
-	cancelBtn.onclick = () => {
-		console.log("closing...");
-		pathList = [];
-		selectedElement = null;
-		dialog.close();
-	};
+	cancelBtn.onclick = closeDialog;
 
 	okButton.onclick = () => {
 		console.log(selectedElement);
@@ -371,35 +368,35 @@ const addListeners = (cb) => {
 	});
 }
 
-const renderDialogContent = (data, cb) => {
+const renderDialogContent = (data) => {
 	console.log(data);
 	fetchedData = data;
-	dialogFileList.innerHTML = renderContent(data, cb);
+	dialogFileList.innerHTML = renderContent(data);
 	dialogFilePreview.querySelector(".file-preview").innerHTML = "";
-	addListeners(cb);
 }
 
-const renderDialog = (cb, path) => {
+const renderDialog = () => {
+	const path = "root" + (pathList.length == 0 ? "" : "/") + pathList.join("/");
+	console.log(`loading ${path}`);
 	fetchDocs(path)
 		.then(data => {
-			renderDialogContent(data, cb)
+			renderDialogContent(data)
 		})
 		.catch(error => {
 			console.log(error.error)
 			pathList.pop();
-			addListeners(cb);
 		});
 }
 
-const filePickerDialogHandler = (cb) => {
-	onDialogClose = cb;
+const filePickerDialogHandler = () => {
 	dialog.showModal();
 	console.log(dialog);
-	renderDialog(cb, "root" /* initial path/folder to load */);
+	renderDialog();
 }
 
 const filePickerHandler = (cb, value, meta) => {
-	filePickerDialogHandler(cb);
+	addDialogListeners(cb);
+	filePickerDialogHandler();
 	// fileBrowser(cb);
 };
 
