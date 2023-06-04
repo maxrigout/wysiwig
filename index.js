@@ -424,7 +424,7 @@ const renderSingleElement = (element, index) => {
 
 const renderParentFolder = () => {
 	return `<div onclick="navigateUp()">
-				${svg.folder}parent
+				${svg.folder} dossier parent
 			</div>`;
 }
 
