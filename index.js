@@ -342,10 +342,19 @@ const renderTitleBar = () => {
 
 const updatePreview = () => {
 	const filePreview = dialogFilePreview.querySelector(".file-preview");
+	if (selectedElement === null) {
+		filePreview.style.visibility = "hidden"
+	}
 	if (selectedElement.data.type === "folder") {
+		filePreview.style.visibility = "hidden"
+		filePreview.innerHTML = "";
+		return;
+	} else if (selectedElement.data.type === "parentFolder") {
+		filePreview.style.visibility = "hidden"
 		filePreview.innerHTML = "";
 		return;
 	}
+	filePreview.style.visibility = "visible"
 	filePreview.innerHTML = `<img src="${selectedElement.data.url}">`
 }
 
@@ -389,7 +398,8 @@ const navigateUp = () => {
 // https://www.w3schools.com/howto/howto_css_image_gallery.asp
 const renderSingleImage = (image, index) => {
 	console.log("rendering image", image);
-	return `<div onclick="selectElement(this, ${index});">
+	return `<div onclick="selectElement(this, ${index});"
+	${selectedElement !== null && selectedElement.index === index ? `class="${fileSelectedClass}"` : ``}>
 	<div>
 		<div>${image.name}</div>
 	</div>
@@ -406,7 +416,8 @@ const renderSingleFile = (file, index) => {
 
 const renderSingleFolder = (folder, index) => {
 	console.log("rendering folder", folder, index);
-	return `<div onclick="selectElement(this, ${index});">
+	return `<div onclick="selectElement(this, ${index});"
+	${selectedElement !== null && selectedElement.index === index ? `class="${fileSelectedClass}"` : ``}>
 	${svg.folder}
 	${folder.name}
 	</div>`
@@ -420,14 +431,15 @@ const renderSingleElement = (element, index) => {
 }
 
 const renderParentFolder = () => {
-	return `<div onclick="selectElement(this, -1);">
+	return `<div onclick="selectElement(this, -1);"
+	${selectedElement !== null && selectedElement.index === -1 ? `class="${fileSelectedClass}"` : ``}>
 				${svg.folder} dossier parent
 			</div>`;
 }
 
 const closeDialog = () => {
 	console.log("closing dialog");
-	selectedElement = null;
+	// selectedElement = null;
 	dialog.close();
 }
 
@@ -486,7 +498,7 @@ const renderDialogContent = (data) => {
 	// potentially sort the data
 	// data.sort((e1, e2) => e1.name.localeCompare(e2.name));
 	dialogFileList.innerHTML = renderContent(data);
-	dialogFilePreview.querySelector(".file-preview").innerHTML = "";
+	updatePreview();
 }
 
 const renderDialog = () => {
