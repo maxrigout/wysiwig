@@ -342,13 +342,20 @@ const renderTitleBar = () => {
 
 const updatePreview = () => {
 	const filePreview = dialogFilePreview.querySelector(".file-preview");
+	if (selectedElement === null) {
+		filePreview.style.visibility = "hidden"
+		return;
+	}
 	if (selectedElement.data.type === "folder") {
+		filePreview.style.visibility = "hidden"
 		filePreview.innerHTML = "";
 		return;
 	} else if (selectedElement.data.type === "parentFolder") {
+		filePreview.style.visibility = "hidden"
 		filePreview.innerHTML = "";
 		return;
 	}
+	filePreview.style.visibility = "visible"
 	filePreview.innerHTML = `<img src="${selectedElement.data.url}">`
 }
 
@@ -502,7 +509,7 @@ const renderDialog = () => {
 			renderDialogContent(data)
 		})
 		.catch(error => {
-			console.log(error.error)
+			console.log(error)
 			pathList.pop();
 		});
 }
