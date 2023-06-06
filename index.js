@@ -422,7 +422,7 @@ const renderSingleElement = (element, index) => {
 }
 
 const renderParentFolder = () => {
-	return `<div id="element_${index}" onclick="selectElement(this, -1);">
+	return `<div id="element_-1" onclick="selectElement(this, -1);">
 				${svg.folder} dossier parent
 			</div>`;
 }
@@ -441,9 +441,9 @@ const closeDialogForSuccess = (cb) => {
 const renderContent = (data) => {
 	const renderedContent = data.map((e, index) => renderSingleElement(e, index)).join("<hr>");
 	if (pathList.length === 0)
-		return `<div class="files-list">${renderedContent}</div>`
+		return `<div class="file-list">${renderedContent}</div>`
 	const renderedParentFolder = renderParentFolder();
-	return `<div class="files-list">${renderedParentFolder}<hr>${renderedContent}</div>`
+	return `<div class="file-list">${renderedParentFolder}<hr>${renderedContent}</div>`
 }
 
 const addDialogListeners = (cb) => {
