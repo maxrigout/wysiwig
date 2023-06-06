@@ -350,28 +350,20 @@ const updatePreview = () => {
 }
 
 const selectElement = (e, i) => {
-	if (selectedElement === null) {
-		selectedElement = { 
-			node: e,
-			index: i,
-			data: fetchedData[i],
-		 };
-		selectedElement.node.classList.add(fileSelectedClass);
-		updatePreview();
-		return;
-	}
-	if (selectedElement.index === i) {
-		console.log(`element already selected`);
-		return;
+	if (selectedElement !== null) {
+		if (selectedElement.index === i) {
+			console.log(`element already selected`);
+			return;
+		}
+		selectedElement.node.classList.remove(fileSelectedClass);
 	}
 	console.log(`select element ${i}`);
-	selectedElement.node.classList.remove(fileSelectedClass);
-	e.classList.add(fileSelectedClass);
 	selectedElement = { 
 		node: e,
 		index: i,
 		data: fetchedData[i],
-	 }
+	 };
+	selectedElement.node.classList.add(fileSelectedClass);
 	updatePreview();
 }
 
@@ -449,6 +441,7 @@ const renderContent = (data) => {
 }
 
 const addDialogListeners = (cb) => {
+	console.log("adding dialog listeners");
 	const addBtn = dialogTitleBar.querySelector("#title-bar-button-add");
 	const cancelBtn = dialogTitleBar.querySelector("#title-bar-button-cancel");
 	const okButton = dialogRoot.querySelector("#btn-ok");
@@ -470,13 +463,13 @@ const addDialogListeners = (cb) => {
 			closeDialogForSuccess(cb);
 	};
 
-	elementsContainer.addEventListener("dblclick", () => {
+	elementsContainer.ondblclick = () => {
 		console.log("db click");
 		if (selectedElement.data.type === "folder")
 			navigateToFolder(selectedElement)
 		else
 			closeDialogForSuccess(cb);
-	});
+	};
 }
 
 const renderDialogContent = (data) => {
