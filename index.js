@@ -372,17 +372,6 @@ const selectElement = (e, i) => {
 	updatePreview();
 }
 
-const selectParentFolder = (e) => {
-	// selectedElement = { 
-	// 	node: e,
-	// 	index: -1,
-	// 	data: {
-	// 		type: "parentFolder"
-	// 	}
-	//  };
-	//  selectedElement.node.classList.add(fileSelectedClass)
-}
-
 const navigateToFolder = (folder) => {
 	selectedElement = null;
 	console.log(`navigating to folder`, folder);
