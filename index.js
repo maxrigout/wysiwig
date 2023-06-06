@@ -398,10 +398,8 @@ const navigateUp = () => {
 // https://www.w3schools.com/howto/howto_css_image_gallery.asp
 const renderSingleImage = (image, index) => {
 	console.log("rendering image", image);
-	return `<div id="element_${index}" onclick="selectElement(this, ${index});">
-	<div>
-		<div>${image.name}</div>
-	</div>
+	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
+		${image.name}
 </div>`;
 }
 
@@ -415,7 +413,7 @@ const renderSingleFile = (file, index) => {
 
 const renderSingleFolder = (folder, index) => {
 	console.log("rendering folder", folder, index);
-	return `<div id="element_${index}" onclick="selectElement(this, ${index});">
+	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
 	${svg.folder}
 	${folder.name}
 	</div>`
@@ -429,7 +427,7 @@ const renderSingleElement = (element, index) => {
 }
 
 const renderParentFolder = () => {
-	return `<div id="element_-1" onclick="selectElement(this, -1);">
+	return `<div class="element_container" id="element_-1" onclick="selectElement(this, -1);">
 				${svg.folder} dossier parent
 			</div>`;
 }
@@ -446,18 +444,19 @@ const closeDialogForSuccess = (cb) => {
 }
 
 const renderContent = (data) => {
-	const renderedContent = data.map((e, index) => renderSingleElement(e, index)).join("<hr>");
+	const renderedContent = data.map((e, index) => renderSingleElement(e, index)).join("");
 	if (pathList.length === 0)
 		return `<div class="file-list">${renderedContent}</div>`
 	const renderedParentFolder = renderParentFolder();
-	return `<div class="file-list">${renderedParentFolder}<hr>${renderedContent}</div>`
+	return `<div class="file-list">${renderedParentFolder}${renderedContent}</div>`
 }
 
 const addDialogListeners = (cb) => {
 	console.log("adding dialog listeners");
 	const addBtn = dialogTitleBar.querySelector("#title-bar-button-add");
-	const cancelBtn = dialogTitleBar.querySelector("#title-bar-button-cancel");
+	const xButton = dialogTitleBar.querySelector("#title-bar-button-cancel");
 	const okButton = dialogRoot.querySelector("#btn-ok");
+	const cancelButton = dialogRoot.querySelector("#btn-cancel");
 	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
 
 	addBtn.onclick = () => {
@@ -466,7 +465,8 @@ const addDialogListeners = (cb) => {
 			console.log(metadata);
 		});
 	}
-	cancelBtn.onclick = closeDialog;
+	xButton.onclick = closeDialog;
+	cancelButton.onclick = closeDialog;
 
 	okButton.onclick = () => {
 		console.log(selectedElement);
