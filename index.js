@@ -361,10 +361,26 @@ const selectElement = (e, i) => {
 	selectedElement = { 
 		node: e,
 		index: i,
-		data: fetchedData[i],
-	 };
+		data: null,
+	};
+	if (i === -1) {
+		selectedElement.data = {type: "parentFolder"}
+	} else if (i >= 0 && i < fetchedData.length) {
+		selectedElement.data = fetchedData[i];
+	}
 	selectedElement.node.classList.add(fileSelectedClass);
 	updatePreview();
+}
+
+const selectParentFolder = (e) => {
+	// selectedElement = { 
+	// 	node: e,
+	// 	index: -1,
+	// 	data: {
+	// 		type: "parentFolder"
+	// 	}
+	//  };
+	//  selectedElement.node.classList.add(fileSelectedClass)
 }
 
 const navigateToFolder = (folder) => {
@@ -415,7 +431,7 @@ const renderSingleElement = (element, index) => {
 }
 
 const renderParentFolder = () => {
-	return `<div onclick="navigateUp()">
+	return `<div onclick="selectElement(this, -1);">
 				${svg.folder} dossier parent
 			</div>`;
 }
@@ -465,10 +481,13 @@ const addDialogListeners = (cb) => {
 
 	elementsContainer.ondblclick = () => {
 		console.log("db click");
-		if (selectedElement.data.type === "folder")
+		if (selectedElement.data.type === "parentFolder") {
+			navigateUp();
+		} else if (selectedElement.data.type === "folder") {
 			navigateToFolder(selectedElement)
-		else
+		} else {
 			closeDialogForSuccess(cb);
+		}
 	};
 }
 
