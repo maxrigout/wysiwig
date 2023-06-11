@@ -435,8 +435,8 @@ const renderSingleFile = (file, index) => {
 const renderSingleFolder = (folder, index) => {
 	console.log("rendering folder", folder, index);
 	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
-	<img src="icons/folder.png">
-	${folder.name}
+		<img src="icons/folder.png">
+		${folder.name}
 	</div>`
 }
 
@@ -449,8 +449,8 @@ const renderSingleElement = (element, index) => {
 
 const renderParentFolder = () => {
 	return `<div class="element_container" id="element_-1" onclick="selectElement(this, -1);">
-	<img src="icons/folder.png"> dossier parent
-			</div>`;
+		<img src="icons/folder.png"> dossier parent
+	</div>`;
 }
 
 const closeDialog = () => {
