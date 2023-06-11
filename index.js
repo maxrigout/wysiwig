@@ -449,7 +449,7 @@ const renderSingleElement = (element, index) => {
 
 const renderParentFolder = () => {
 	return `<div class="element_container" id="element_-1" onclick="selectElement(this, -1);">
-				${svg.folder} dossier parent
+	<img src="icons/folder.png"> dossier parent
 			</div>`;
 }
 
