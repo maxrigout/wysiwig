@@ -13,7 +13,7 @@ let fetchedData;
 const defaultDialogContent = dialogRoot.innerHTML;
 
 const svg = {
-	folder: `<svg viewBox="0 0 40 40"><g fill-rule="evenodd"><path d="M3.908 4h10.104c1.163 0 1.582.073 2.032.229.45.156.838.395 1.179.728.34.333.593.675 1.113 1.716L19 8H0v-.092c0-.866.162-1.547.467-2.117a3.18 3.18 0 0 1 1.324-1.324C2.36 4.162 3.042 4 3.908 4zM0 8h34.872c1.783 0 2.43.186 3.082.534.652.349 1.163.86 1.512 1.512.348.652.534 1.299.534 3.082v17.744c0 1.783-.186 2.43-.534 3.082a3.635 3.635 0 0 1-1.512 1.512c-.652.348-1.299.534-3.082.534H5.128c-1.783 0-2.43-.186-3.082-.534a3.635 3.635 0 0 1-1.512-1.512C.186 33.302 0 32.655 0 30.872V8z"></path></g></svg>`,
+	folder: `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill-rule="evenodd"><path d="M3.908 4h10.104c1.163 0 1.582.073 2.032.229.45.156.838.395 1.179.728.34.333.593.675 1.113 1.716L19 8H0v-.092c0-.866.162-1.547.467-2.117a3.18 3.18 0 0 1 1.324-1.324C2.36 4.162 3.042 4 3.908 4zM0 8h34.872c1.783 0 2.43.186 3.082.534.652.349 1.163.86 1.512 1.512.348.652.534 1.299.534 3.082v17.744c0 1.783-.186 2.43-.534 3.082a3.635 3.635 0 0 1-1.512 1.512c-.652.348-1.299.534-3.082.534H5.128c-1.783 0-2.43-.186-3.082-.534a3.635 3.635 0 0 1-1.512-1.512C.186 33.302 0 32.655 0 30.872V8z"></path></g></svg>`,
 	plus: `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 11h6a1 1 0 0 1 0 2h-6v6a1 1 0 0 1-2 0v-6H5a1 1 0 0 1 0-2h6V5a1 1 0 0 1 2 0v6z"></path></svg>`,
 	x: `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.251 8.157L13.421 12l3.83 3.843a.996.996 0 0 1-1.408 1.408L12 13.421l-3.843 3.83a.996.996 0 0 1-1.408-1.408L10.579 12l-3.83-3.843A.996.996 0 0 1 8.157 6.75L12 10.579l3.843-3.83a.996.996 0 0 1 1.408 1.408z" fill-rule="evenodd"></path></svg>`,
 	search: `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.907 17.319a8 8 0 1 1 1.412-1.412c.013.011.026.023.038.036l4.35 4.35a1 1 0 0 1-1.414 1.414l-4.35-4.35a1.016 1.016 0 0 1-.036-.038zM11 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path></svg>`,
@@ -295,12 +295,14 @@ const fetchDocs_hardCoded = async (url) => {
 	});
 }
 
-const fetchDocs_url = async (path) => {
-	const url = /* baseUrl + */ path
+const fetchDocs_server = async (path) => {
+	const baseUrl = "http://192.168.1.222:3000/getliste.php";
 	const myHeaders = new Headers();
-	const myRequest = new Request(url, {
-		method: "GET",
+	myHeaders.set("Content-Type", "application/json");
+	const myRequest = new Request(baseUrl, {
+		method: "POST",
 		headers: myHeaders,
+		body: JSON.stringify({path: path}),
 	});
 
 	const response = await fetch(myRequest);
@@ -309,6 +311,7 @@ const fetchDocs_url = async (path) => {
 }
 
 const fetchDocs = async (path) => {
+	// return await fetchDocs_server(path);
 	return await fetchDocs_hardCoded(path);
 }
 
@@ -416,6 +419,7 @@ const navigateUp = () => {
 const renderSingleImage = (image, index) => {
 	console.log("rendering image", image);
 	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
+	<img src="icons/file.png">
 		${image.name}
 </div>`;
 }
@@ -431,7 +435,7 @@ const renderSingleFile = (file, index) => {
 const renderSingleFolder = (folder, index) => {
 	console.log("rendering folder", folder, index);
 	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
-	${svg.folder}
+	<img src="icons/folder.png">
 	${folder.name}
 	</div>`
 }
@@ -601,6 +605,7 @@ const fetchLinkList = () => [
 
 tinymce.init({
     selector: 'textarea#open-source-plugins',
+	height: "500px",
     plugins: [
       'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
       'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
