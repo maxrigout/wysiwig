@@ -266,7 +266,7 @@ const pictureFiles = [
 	},
 ]
 
-const fetchDocs = async (url) => {
+const fetchDocs_old = async (url) => {
 	let data = null;
 	if (url === "root") {
 		data = rootFiles
@@ -293,6 +293,19 @@ const fetchDocs = async (url) => {
 			}
 		}, 500)
 	});
+}
+
+const fetchDocs = async (path) => {
+	const url = /* baseUrl + */ path
+	const myHeaders = new Headers();
+	const myRequest = new Request(url, {
+		method: "GET",
+		headers: myHeaders,
+	});
+
+	const response = await fetch(myRequest);
+	const jsonData = await response.json();
+	return jsonData;
 }
 
 
