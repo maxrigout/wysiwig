@@ -47,7 +47,7 @@ const fetchDocs_server = async (path) => {
 
 	// for a form encoded body...
 	const body = new URLSearchParams();
-	body.append("path", path);
+	body.append("u", path);
 	const myRequest = new Request(baseUrl, {
 		method: "POST",
 		headers: myHeaders,
