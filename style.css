@@ -66,6 +66,7 @@ dialog {
 
 .vertical-center {
 	margin-top: auto;
+	margin-bottom: auto;
 }
 
 .align-right {

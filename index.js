@@ -1,15 +1,19 @@
 const fileSelectedClass = "file-selected";
 const folderIconPath = "icons/folder.png";
-const parentFolderIconPath = "icons/folder.png";
+const parentFolderIconPath = "icons/parent_folder_icon.png";
 const imageIconPath = "icons/image_icon.png";
 const audioIconPath = "icons/audio_icon.png";
 const pdfIconPath = "icons/pdf_icon.png";
 const musescoreIconPath = "icons/musescore_icon.png";
 const defaultFileIconPath = "icons/file_icon.png";
 
+const defaultRootFolder = "Medias";
+const baseUrl = "http://192.168.1.222:3000/getliste.php";
+
 const dialog = document.querySelector("#myDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
 const dialogTitleBar = dialog.querySelector(".dialog-title-bar");
+const dialogTitleBarPath = dialog.querySelector(".title-bar-path");
 const dialogFileList = dialog.querySelector(".dialog-file-list");
 const dialogFilePreview = dialog.querySelector(".dialog-file-preview");
 
@@ -38,7 +42,6 @@ const fetchDocs_hardCoded = async (url) => {
 }
 
 const fetchDocs_server = async (path) => {
-	const baseUrl = "http://192.168.1.222:3000/getliste.php";
 	const myHeaders = new Headers();
 
 	// for a JSON body...
@@ -48,6 +51,7 @@ const fetchDocs_server = async (path) => {
 	// for a form encoded body...
 	const body = new URLSearchParams();
 	body.append("u", path);
+
 	const myRequest = new Request(baseUrl, {
 		method: "POST",
 		headers: myHeaders,
@@ -112,6 +116,10 @@ const updatePreview = () => {
 	}
 	filePreview.style.visibility = "visible";
 	filePreview.innerHTML = `<img src="${selectedElement.data.url}">`;
+}
+
+const updateFolderPath = () => {
+	dialogTitleBarPath.innerHTML = defaultRootFolder + (pathList.length === 0 ? "" : "/") + pathList.join("/");
 }
 
 const selectElement = (e, i) => {
@@ -273,6 +281,7 @@ const renderDialogContent = (data) => {
 		selectElement(selectedNode, selectedElement.index);
 	}
 	updatePreview();
+	updateFolderPath();
 }
 
 const renderDialog = () => {
@@ -356,48 +365,20 @@ const fetchLinkList = () => [
 ];
 
 tinymce.init({
-    selector: 'textarea#open-source-plugins',
+    selector: 'textarea#myTextArea',
 	height: "700px",
     plugins: [
       'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
       'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
-      'media', 'table', 'emoticons', 'template', 'help', 'save'
+      'media', 'table', 'emoticons', 'template', 'help', 'save',
     ],
     toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist outdent indent | link image | preview media fullscreen | ' +
       'forecolor backcolor emoticons | help | save',
-    // menu: {
-    //   favs: { title: 'My Favorites', items: 'code visualaid | searchreplace | emoticons' }
-    // },
     // menubar: false,
 	// statusbar: false,
-    content_css: 'css/content.css',
-	language: "fr_FR",
-
-	// image_advtab: true,
-
-	// image_list: (success) => {
-	// 	console.log("fetching images...")
-	// 	success([
-	// 	  { title: 'Dog', value: 'https://git-scm.com/images/logo@2x.png' },
-	// 	  { title: 'Cat', value: 'mycat.gif' }
-	// 	]);
-	// },
-
-	link_list: (success) => { // called on link dialog open
-		const links = fetchLinkList(); // get link_list data
-		success(links); // pass link_list data to {productname}
-	},
+	// language: "fr_FR",
 
 	file_picker_types: 'image',
 	file_picker_callback: filePickerHandler,
-
-	// automatic_uploads: false,
-	// image_uploadtab: true,
-	// images_upload_handler: uploadHandler,
-	// images_upload_url: 'test/postAcceptor.php',
-	// images_upload_base_path: '/some/basepath', // https://www.tiny.cloud/docs/tinymce/6/image/#images_upload_base_path
-	// images_upload_credentials: true, // https://www.tiny.cloud/docs/tinymce/6/image/#images_upload_credentials
-	// https://www.tiny.cloud/docs/tinymce/6/image/#images_upload_handler
-
-  });
+});
