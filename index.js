@@ -355,6 +355,7 @@ const fetchLinkList = () => [
     }
 ];
 
+// would need to create our own insert image plugin...
 $('.my-editor').trumbowyg({
 	lang: 'fr'
 });
