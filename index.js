@@ -1,11 +1,11 @@
 const fileSelectedClass = "file-selected";
 const folderIconPath = "icons/folder.png";
 const parentFolderIconPath = "icons/folder.png";
-const imageIconPath = "icons/file.png";
-const audioIconPath = "icons/file.png";
-const pdfIconPath = "icons/file.png";
-const musescoreIconPath = "icons/file.png";
-const defaultFileIconPath = "icons/file.png";
+const imageIconPath = "icons/image_icon.png";
+const audioIconPath = "icons/audio_icon.png";
+const pdfIconPath = "icons/pdf_icon.png";
+const musescoreIconPath = "icons/musescore_icon.png";
+const defaultFileIconPath = "icons/file_icon.png";
 
 const dialog = document.querySelector("#myDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
