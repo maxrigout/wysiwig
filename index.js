@@ -353,51 +353,8 @@ const fetchLinkList = () => [
         { title: '{productname} GitHub', value: 'https://github.com/tinymce/' }
       ]
     }
-  ];
+];
 
-tinymce.init({
-    selector: 'textarea#open-source-plugins',
-	height: "700px",
-    plugins: [
-      'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
-      'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
-      'media', 'table', 'emoticons', 'template', 'help', 'save'
-    ],
-    toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | link image | preview media fullscreen | ' +
-      'forecolor backcolor emoticons | help | save',
-    // menu: {
-    //   favs: { title: 'My Favorites', items: 'code visualaid | searchreplace | emoticons' }
-    // },
-    // menubar: false,
-	// statusbar: false,
-    content_css: 'css/content.css',
-	language: "fr_FR",
-
-	// image_advtab: true,
-
-	// image_list: (success) => {
-	// 	console.log("fetching images...")
-	// 	success([
-	// 	  { title: 'Dog', value: 'https://git-scm.com/images/logo@2x.png' },
-	// 	  { title: 'Cat', value: 'mycat.gif' }
-	// 	]);
-	// },
-
-	link_list: (success) => { // called on link dialog open
-		const links = fetchLinkList(); // get link_list data
-		success(links); // pass link_list data to {productname}
-	},
-
-	file_picker_types: 'image',
-	file_picker_callback: filePickerHandler,
-
-	// automatic_uploads: false,
-	// image_uploadtab: true,
-	// images_upload_handler: uploadHandler,
-	// images_upload_url: 'test/postAcceptor.php',
-	// images_upload_base_path: '/some/basepath', // https://www.tiny.cloud/docs/tinymce/6/image/#images_upload_base_path
-	// images_upload_credentials: true, // https://www.tiny.cloud/docs/tinymce/6/image/#images_upload_credentials
-	// https://www.tiny.cloud/docs/tinymce/6/image/#images_upload_handler
-
-  });
+$('.my-editor').trumbowyg({
+	lang: 'fr'
+});
