@@ -357,11 +357,10 @@ const fetchLinkList = () => [
 
 tinymce.init({
     selector: 'textarea#open-source-plugins',
-	height: "500px",
     plugins: [
       'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
       'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
-      'media', 'table', 'emoticons', 'template', 'help', 'save'
+      'media', 'table', 'emoticons', 'template', 'help', 'save', 'autoresize'
     ],
     toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist outdent indent | link image | preview media fullscreen | ' +
