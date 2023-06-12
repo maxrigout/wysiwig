@@ -17,7 +17,27 @@ let pathList = [];
 let selectedElement = null;
 let fetchedData;
 
-const fetchDocs = async (path) => {
+function getRandomArbitrary(min, max) {
+	return Math.floor(Math.random() * (max - min) + min);
+  }  
+
+const fetchDocs_hardCoded = async (url) => {
+	let data = serverDir[url];
+	const timeout = getRandomArbitrary(100, 1000);
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			console.info(`took ${timeout} ms`);
+			if (data) {
+				resolve(data);
+			}
+			else {
+				reject({error: "no data available"});
+			}
+		}, timeout)
+	});
+}
+
+const fetchDocs_server = async (path) => {
 	const baseUrl = "http://192.168.1.222:3000/getliste.php";
 	const myHeaders = new Headers();
 
@@ -37,6 +57,11 @@ const fetchDocs = async (path) => {
 	const response = await fetch(myRequest);
 	const jsonData = await response.json();
 	return jsonData;
+}
+
+const fetchDocs = async (path) => {
+	// return await fetchDocs_server(path);
+	return await fetchDocs_hardCoded(path);
 }
 
 // https://stackoverflow.com/questions/9068156/server-side-file-browsing
