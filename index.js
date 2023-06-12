@@ -377,7 +377,7 @@ tinymce.init({
       'forecolor backcolor emoticons | help | save',
     // menubar: false,
 	// statusbar: false,
-	// language: "fr_FR",
+	language: "fr_FR",
 
 	file_picker_types: 'image',
 	file_picker_callback: filePickerHandler,
