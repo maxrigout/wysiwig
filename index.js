@@ -19,7 +19,7 @@ let fetchedData;
 
 function getRandomArbitrary(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
-  }  
+}
 
 const fetchDocs_hardCoded = async (url) => {
 	let data = serverDir[url];
@@ -341,7 +341,7 @@ const uploadHandler = (blobInfo, progress) => new Promise((resolve, reject) => {
 	console.log(formData);
   
 	xhr.send(formData);
-  });
+});
 
 const fetchLinkList = () => [
     { title: '{companyname} Home Page', value: '{companyurl}' },
@@ -353,7 +353,7 @@ const fetchLinkList = () => [
         { title: '{productname} GitHub', value: 'https://github.com/tinymce/' }
       ]
     }
-  ];
+];
 
 tinymce.init({
     selector: 'textarea#open-source-plugins',
