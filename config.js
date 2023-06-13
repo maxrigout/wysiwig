@@ -8,7 +8,7 @@ const musescoreIconPath = "icons/musescore_icon.png";
 const defaultFileIconPath = "icons/file_icon.png";
 
 const defaultRootFolder = "Medias";
-const baseUrl = "http://192.168.1.222:3000/getliste.php";
+const baseUrl = "";
 
 const fetchDocs = async (path) => {
 	// return await fetchDocs_server(path);
