@@ -178,7 +178,7 @@ const renderSingleFile = (file, index) => {
 const renderSingleFolder = (folder, index) => {
 	console.debug("rendering folder", folder, index);
 	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
-		<img src="${folderIconPath}">
+		${folderIconPath !== null && folderIconPath !== "" ? `<img src="${folderIconPath}">` : ""}
 		${folder.name}
 	</div>`;
 }
@@ -192,7 +192,8 @@ const renderSingleElement = (element, index) => {
 
 const renderParentFolder = () => {
 	return `<div class="element_container" id="element_-1" onclick="selectElement(this, -1);">
-		<img src="${parentFolderIconPath}"> dossier parent
+		${parentFolderIconPath !== null && parentFolderIconPath !== "" ? `<img src="${parentFolderIconPath}">` : ""}
+		dossier parent
 	</div>`;
 }
 
