@@ -1,15 +1,3 @@
-const fileSelectedClass = "file-selected";
-const folderIconPath = "icons/folder.png";
-const parentFolderIconPath = "icons/parent_folder_icon.png";
-const imageIconPath = "icons/image_icon.png";
-const audioIconPath = "icons/audio_icon.png";
-const pdfIconPath = "icons/pdf_icon.png";
-const musescoreIconPath = "icons/musescore_icon.png";
-const defaultFileIconPath = "icons/file_icon.png";
-
-const defaultRootFolder = "Medias";
-const baseUrl = "http://192.168.1.222:3000/getliste.php";
-
 const dialog = document.querySelector("#myDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
 const dialogTitleBar = dialog.querySelector(".dialog-title-bar");
@@ -25,7 +13,7 @@ function getRandomArbitrary(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
-const fetchDocs_hardCoded = async (url) => {
+async function fetchDocs_hardCoded(url) {
 	let data = serverDir[url];
 	const timeout = getRandomArbitrary(100, 1000);
 	return new Promise((resolve, reject) => {
@@ -41,7 +29,7 @@ const fetchDocs_hardCoded = async (url) => {
 	});
 }
 
-const fetchDocs_server = async (path) => {
+async function fetchDocs_server(path) {
 	const myHeaders = new Headers();
 
 	// for a JSON body...
@@ -61,11 +49,6 @@ const fetchDocs_server = async (path) => {
 	const response = await fetch(myRequest);
 	const jsonData = await response.json();
 	return jsonData;
-}
-
-const fetchDocs = async (path) => {
-	// return await fetchDocs_server(path);
-	return await fetchDocs_hardCoded(path);
 }
 
 // https://stackoverflow.com/questions/9068156/server-side-file-browsing
@@ -187,7 +170,7 @@ const renderSingleFile = (file, index) => {
 			break;
 	}
 	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
-		<img src="${iconPath}">
+		${iconPath !== null && iconPath !== "" ? `<img src="${iconPath}">` : ""}
 		${file.name}
 	</div>`;
 }
