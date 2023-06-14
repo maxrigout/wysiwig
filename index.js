@@ -5,8 +5,11 @@ const dialogTitleBarPath = dialog.querySelector(".title-bar-path");
 const dialogFileList = dialog.querySelector(".dialog-file-list");
 const dialogFilePreview = dialog.querySelector(".dialog-file-preview");
 
+const elementIdPrefix = "element_";
+
 let pathList = [];
 let selectedElement = null;
+let fileToSelect = "";
 let fetchedData;
 
 function getRandomArbitrary(min, max) {
@@ -40,7 +43,7 @@ async function fetchDocs_server(path) {
 	const body = new URLSearchParams();
 	body.append("u", path);
 
-	const myRequest = new Request(baseUrl, {
+	const myRequest = new Request(retrieveListUrl, {
 		method: "POST",
 		headers: myHeaders,
 		body: body,
@@ -127,6 +130,17 @@ const selectElement = (e, i) => {
 	updatePreview();
 }
 
+const selectElementFromName = (fileName) => {
+	console.debug("selecting file", fileName);
+	const index = fetchedData.findIndex(e => e.name === fileName);
+	if (index === -1) {
+		return;
+	}
+	const node = document.querySelector(`#${elementIdPrefix + index}`);
+	console.log(node);
+	selectElement(node, index);
+}
+
 const navigateToFolder = (folder) => {
 	selectedElement = null;
 	console.info(`navigating to folder`, folder);
@@ -169,7 +183,7 @@ const renderSingleFile = (file, index) => {
 			iconPath = musescoreIconPath;
 			break;
 	}
-	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
+	return `<div class="element_container" id="${elementIdPrefix + index}" onclick="selectElement(this, ${index});">
 		${iconPath !== null && iconPath !== "" ? `<img src="${iconPath}">` : ""}
 		${file.name}
 	</div>`;
@@ -177,7 +191,7 @@ const renderSingleFile = (file, index) => {
 
 const renderSingleFolder = (folder, index) => {
 	console.debug("rendering folder", folder, index);
-	return `<div class="element_container" id="element_${index}" onclick="selectElement(this, ${index});">
+	return `<div class="element_container" id="${elementIdPrefix + index}" onclick="selectElement(this, ${index});">
 		${folderIconPath !== null && folderIconPath !== "" ? `<img src="${folderIconPath}">` : ""}
 		${folder.name}
 	</div>`;
@@ -191,7 +205,7 @@ const renderSingleElement = (element, index) => {
 }
 
 const renderParentFolder = () => {
-	return `<div class="element_container" id="element_-1" onclick="selectElement(this, -1);">
+	return `<div class="element_container" id="${elementIdPrefix}-1" onclick="selectElement(this, -1);">
 		${parentFolderIconPath !== null && parentFolderIconPath !== "" ? `<img src="${parentFolderIconPath}">` : ""}
 		dossier parent
 	</div>`;
@@ -274,10 +288,19 @@ const renderDialog = () => {
 	fetchDocs(path)
 		.then(data => {
 			renderDialogContent(data);
+			if (fileToSelect !== "") {
+				console.debug("selecting previously selected file", fileToSelect);
+				selectElementFromName(fileToSelect);
+				// reset the fileToSelect to empty string so that we don't try to reselect
+				// the file when we navigate
+				fileToSelect = "";
+			}
 		})
 		.catch(error => {
 			console.error(error);
-			pathList.pop();
+			// we still want to render a folder to give the user the ability
+			// to go up in the directory tree.
+			renderDialogContent([]);
 		});
 }
 
@@ -286,10 +309,40 @@ const filePickerDialogHandler = () => {
 	renderDialog();
 }
 
+const extractFileInfo = (originalFilePath) => {
+	const i = originalFilePath.lastIndexOf('/');
+	// truncate the file name (anything after the last '/')
+	let filePath = originalFilePath.substring(0, i);
+
+	// truncate the base url if it exists
+	const j = filePath.indexOf(baseUrl);
+	if (j !== -1) {
+		filePath = filePath.substring(j + baseUrl.length);
+	} else {
+		// TODO: should we still continue?
+	}
+
+	// remove the leading '/' is there's one
+	const k = filePath.indexOf('/');
+	if (k === 0) {
+		filePath = filePath.substring(1);
+	}
+
+	pathList = filePath.split("/");
+
+	// save the currently selected file
+	fileToSelect = originalFilePath.substring(i + 1);
+
+	console.debug("previously selected file:", fileToSelect)
+	console.debug(pathList);
+}
+
 const filePickerHandler = (cb, value, meta) => {
+	if (value !== "") {
+		extractFileInfo(value);
+	}
 	addDialogListeners(cb);
 	filePickerDialogHandler();
-	// fileBrowser(cb);
 };
 
 const uploadHandler = (blobInfo, progress) => new Promise((resolve, reject) => {
@@ -357,11 +410,11 @@ tinymce.init({
       'media', 'table', 'emoticons', 'template', 'help', 'save', 'example'
     ],
 	external_plugins: {
-		maxLien: '../tinymce_plugins/lien2/plugin.js',
-		example: '../tinymce_plugins/lien/plugin.js'
+		maxLien: 'tinymce_plugins/maxLien/plugin.js',
+		example: 'tinymce_plugins/example/plugin.js'
 	},
     toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | lien image | preview media fullscreen | ' +
+      'bullist numlist outdent indent | maxLien image | preview media fullscreen | ' +
       'forecolor backcolor emoticons | help | save example',
     // menubar: false,
 	// statusbar: false,

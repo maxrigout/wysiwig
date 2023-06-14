@@ -13,6 +13,15 @@ tinymce.PluginManager.add('example', (editor, url) => {
 			type: 'input',
 			name: 'title',
 			label: 'Title'
+		  },
+		  {
+			type: 'button',
+			name: 'browse',
+			text: 'parcourir',
+			icon: 'link',
+			onAction: () => {
+				console.log("button clicked");
+			  }
 		  }
 		]
 	  },
@@ -30,13 +39,13 @@ tinymce.PluginManager.add('example', (editor, url) => {
 	  onSubmit: (api) => {
 		const data = api.getData();
 		/* Insert content when the window form is submitted */
-		editor.insertContent('Title: ' + data.title);
+		editor.insertContent(`<a href=${data.title}>${data.title}</a>`);
 		api.close();
 	  }
 	});
 	/* Add a button that opens a window */
 	editor.ui.registry.addButton('example', {
-	  text: 'My button',
+	  text: 'My Toolbar Button',
 	  onAction: () => {
 		/* Open window */
 		openDialog();

@@ -263,6 +263,10 @@ const animalFiles = [
 
 const serverDir = {}
 serverDir[""] = rootFiles;
+serverDir["img"];
+serverDir["img/cats"] = catFiles;
+serverDir["img/birds"] = birdFiles;
+serverDir["img/dogs"] = dogFiles;
 serverDir["pictures"] = pictureFiles;
 serverDir["animaux"] = animalFiles;
 serverDir["animaux/chats"] = catFiles;

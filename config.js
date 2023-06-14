@@ -7,8 +7,11 @@ const pdfIconPath = "icons/pdf_icon.png";
 const musescoreIconPath = "icons/musescore_icon.png";
 const defaultFileIconPath = "icons/file_icon.png";
 
-const defaultRootFolder = "Medias";
-const baseUrl = "";
+const defaultRootFolder = "medias";
+// don't include the http or https to truncate both
+const baseUrl = "www.tiny.cloud";
+// const baseUrl = "choeuraurelianum.fr/media/";
+const retrieveListUrl = "";
 
 const fetchDocs = async (path) => {
 	// return await fetchDocs_server(path);
