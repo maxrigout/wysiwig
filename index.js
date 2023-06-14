@@ -220,6 +220,7 @@ const renderContent = (data) => {
 			const { name, iconPath } = getElementNameAndIcon(element);
 			return renderSingleElement(name, index, iconPath);
 		}).join("");
+	// Note: we can actually remove the parent div
 	if (pathList.length === 0) {
 		return `<div class="${fileListClass}">${renderedContent}</div>`;
 	}
