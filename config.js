@@ -9,8 +9,7 @@ const defaultFileIconPath = "icons/file_icon.png";
 
 const defaultRootFolder = "medias";
 // don't include the http or https to truncate both
-const baseUrl = "www.tiny.cloud";
-// const baseUrl = "choeuraurelianum.fr/media/";
+const baseUrl = "";
 const retrieveListUrl = "";
 
 const fetchDocs = async (path) => {
