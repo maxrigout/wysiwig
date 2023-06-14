@@ -407,19 +407,15 @@ tinymce.init({
     plugins: [
       'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
       'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
-      'media', 'table', 'emoticons', 'template', 'help', 'save', 'example'
+      'media', 'table', 'emoticons', 'template', 'help', 'save',
     ],
-	external_plugins: {
-		maxLien: 'tinymce_plugins/maxLien/plugin.js',
-		example: 'tinymce_plugins/example/plugin.js'
-	},
     toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | maxLien image | preview media fullscreen | ' +
+      'bullist numlist outdent indent | link image | preview media fullscreen | ' +
       'forecolor backcolor emoticons | help | save example',
     // menubar: false,
 	// statusbar: false,
 	language: "fr_FR",
 
-	file_picker_types: 'image',
+	file_picker_types: 'image,file',
 	file_picker_callback: filePickerHandler,
 });

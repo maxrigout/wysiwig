@@ -11,6 +11,7 @@ const defaultRootFolder = "medias";
 // don't include the http or https to truncate both
 const baseUrl = "";
 const retrieveListUrl = "";
+const externalPluginBaseUrl = "../";
 
 const fetchDocs = async (path) => {
 	// return await fetchDocs_server(path);

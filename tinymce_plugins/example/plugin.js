@@ -4,24 +4,22 @@
   with the TinyMCE instance and using the `external_plugins` option.
 */
 tinymce.PluginManager.add('example', (editor, url) => {
-	const openDialog = () => editor.windowManager.open({
+	const openDialog = (e) => e.windowManager.open({
 	  title: 'Example plugin',
 	  body: {
 		type: 'panel',
 		items: [
-		  {
-			type: 'input',
-			name: 'title',
-			label: 'Title'
-		  },
+			{
+				name: 'src',
+				type: 'urlinput',
+				filetype: 'file',
+				label: 'Source'
+			  },
 		  {
 			type: 'button',
-			name: 'browse',
-			text: 'parcourir',
-			icon: 'link',
-			onAction: () => {
-				console.log("button clicked");
-			  }
+			text: 'load',
+			filetype: 'image',
+			buttonType: 'primary',
 		  }
 		]
 	  },
@@ -39,7 +37,8 @@ tinymce.PluginManager.add('example', (editor, url) => {
 	  onSubmit: (api) => {
 		const data = api.getData();
 		/* Insert content when the window form is submitted */
-		editor.insertContent(`<a href=${data.title}>${data.title}</a>`);
+		console.log(data.src);
+		editor.insertContent(`<a href=${data.src.value}>${data.title}</a>`);
 		api.close();
 	  }
 	});
@@ -48,7 +47,7 @@ tinymce.PluginManager.add('example', (editor, url) => {
 	  text: 'My Toolbar Button',
 	  onAction: () => {
 		/* Open window */
-		openDialog();
+		openDialog(editor);
 	  }
 	});
 	/* Adds a menu item, which can then be included in any menu via the menu/menubar configuration */
@@ -56,7 +55,7 @@ tinymce.PluginManager.add('example', (editor, url) => {
 	  text: 'Example plugin',
 	  onAction: () => {
 		/* Open window */
-		openDialog();
+		openDialog(editor);
 	  }
 	});
 	/* Return the metadata for the help plugin */
