@@ -156,7 +156,7 @@ const navigateUp = () => {
 }
 
 // https://www.w3schools.com/howto/howto_css_image_gallery.asp
-const renderSingleFile = (file, index) => {
+const getFileNameAndIcon = (file, index) => {
 	let iconPath = defaultFileIconPath;
 	switch (file.type) {
 		case "image":
@@ -165,51 +165,43 @@ const renderSingleFile = (file, index) => {
 		case "png":
 		case "gif":
 		case "bmp":
-			console.debug("rendering image", file);
 			iconPath = imageIconPath;
 			break;
 		case "audio":
 		case "mp3":
-			console.debug("rendering audio file", file);
 			iconPath = audioIconPath;
 			break;
 		case "pdf":
-			console.debug("rendering pdf", file);
 			iconPath = pdfIconPath;
 			break;
 		case "musescore":
-			console.debug("rendering musescore file", file);
 			iconPath = musescoreIconPath;
 			break;
 		default:
-			console.debug("rendering unknown file type");
 	}
-	return `<div class="element_container" id="${elementIdPrefix + index}" onclick="selectElement(this, ${index});">
-		${iconPath !== null && iconPath !== "" ? `<img src="${iconPath}">` : ""}
-		${file.name}
-	</div>`;
+	return { name: file.name, iconPath: iconPath };
 }
 
-const renderSingleFolder = (folder, index) => {
-	console.debug("rendering folder", folder, index);
-	return `<div class="element_container" id="${elementIdPrefix + index}" onclick="selectElement(this, ${index});">
-		${folderIconPath !== null && folderIconPath !== "" ? `<img src="${folderIconPath}">` : ""}
-		${folder.name}
-	</div>`;
+const getFolderNameAndIcon = (folder) => {
+	return {name: folder.name, iconPath: folderIconPath};
 }
 
-const renderSingleElement = (element, index) => {
+const getElementNameAndIcon = (element) => {
 	if (element.type === "folder") {
-		return renderSingleFolder(element, index);
+		return getFolderNameAndIcon(element);
 	}
-	return renderSingleFile(element, index);
+	return getFileNameAndIcon(element);
+}
+
+const renderSingleElement = (name, index, iconPath) => {
+	return `<div class="${elementContainerClass}" id="${elementIdPrefix + index}" onclick="selectElement(this, ${index});">
+		${iconPath !== null && iconPath !== "" ? `<img src="${iconPath}">` : ""}
+		${name}
+	</div>`;
 }
 
 const renderParentFolder = () => {
-	return `<div class="element_container" id="${elementIdPrefix}-1" onclick="selectElement(this, -1);">
-		${parentFolderIconPath !== null && parentFolderIconPath !== "" ? `<img src="${parentFolderIconPath}">` : ""}
-		${parentFolderName}
-	</div>`;
+	return renderSingleElement(parentFolderName, -1, parentFolderIconPath);
 }
 
 const closeDialog = () => {
@@ -224,12 +216,15 @@ const closeDialogForSuccess = (cb) => {
 }
 
 const renderContent = (data) => {
-	const renderedContent = data.map((e, index) => renderSingleElement(e, index)).join("");
+	const renderedContent = data.map((element, index) => {
+			const { name, iconPath } = getElementNameAndIcon(element);
+			return renderSingleElement(name, index, iconPath);
+		}).join("");
 	if (pathList.length === 0) {
-		return `<div class="file-list">${renderedContent}</div>`;
+		return `<div class="${fileListClass}">${renderedContent}</div>`;
 	}
 	const renderedParentFolder = renderParentFolder();
-	return `<div class="file-list">${renderedParentFolder}${renderedContent}</div>`;
+	return `<div class="${fileListClass}">${renderedParentFolder}${renderedContent}</div>`;
 }
 
 const addDialogListeners = (cb) => {
@@ -276,7 +271,7 @@ const renderDialogContent = (data) => {
 	// data.sort((e1, e2) => e1.name.localeCompare(e2.name));
 	dialogFileList.innerHTML = renderContent(data);
 	if (selectedElement !== null) {
-		const selectedNode = dialogFileList.querySelector(`#element_${selectedElement.index}`);
+		const selectedNode = dialogFileList.querySelector(`#${elementIdPrefix}${selectedElement.index}`);
 		selectElement(selectedNode, selectedElement.index);
 	}
 	updatePreview();

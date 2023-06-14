@@ -1,4 +1,7 @@
+const fileListClass = "file-list";
 const fileSelectedClass = "file-selected";
+const elementContainerClass = "element_container";
+
 const elementIdPrefix = "element_";
 
 // name to display when rendering the parent folder
