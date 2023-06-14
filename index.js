@@ -354,11 +354,15 @@ tinymce.init({
     plugins: [
       'advlist', 'autolink', 'link', 'image', 'lists', 'charmap', 'preview', 'anchor', 'pagebreak',
       'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
-      'media', 'table', 'emoticons', 'template', 'help', 'save',
+      'media', 'table', 'emoticons', 'template', 'help', 'save', 'example'
     ],
+	external_plugins: {
+		maxLien: '../tinymce_plugins/lien2/plugin.js',
+		example: '../tinymce_plugins/lien/plugin.js'
+	},
     toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | link image | preview media fullscreen | ' +
-      'forecolor backcolor emoticons | help | save',
+      'bullist numlist outdent indent | lien image | preview media fullscreen | ' +
+      'forecolor backcolor emoticons | help | save example',
     // menubar: false,
 	// statusbar: false,
 	language: "fr_FR",
