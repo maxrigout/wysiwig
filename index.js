@@ -338,6 +338,8 @@ const extractFileInfo = (originalFilePath) => {
 }
 
 const filePickerHandler = (cb, value, meta) => {
+	console.debug("value", value);
+	console.debug("meta", meta);
 	if (value !== "") {
 		extractFileInfo(value);
 	}
