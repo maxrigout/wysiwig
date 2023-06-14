@@ -5,8 +5,6 @@ const dialogTitleBarPath = dialog.querySelector(".title-bar-path");
 const dialogFileList = dialog.querySelector(".dialog-file-list");
 const dialogFilePreview = dialog.querySelector(".dialog-file-preview");
 
-const elementIdPrefix = "element_";
-
 let pathList = [];
 let selectedElement = null;
 let fileToSelect = "";
@@ -183,6 +181,8 @@ const renderSingleFile = (file, index) => {
 			console.debug("rendering musescore file", file);
 			iconPath = musescoreIconPath;
 			break;
+		default:
+			console.debug("rendering unknown file type");
 	}
 	return `<div class="element_container" id="${elementIdPrefix + index}" onclick="selectElement(this, ${index});">
 		${iconPath !== null && iconPath !== "" ? `<img src="${iconPath}">` : ""}
@@ -208,7 +208,7 @@ const renderSingleElement = (element, index) => {
 const renderParentFolder = () => {
 	return `<div class="element_container" id="${elementIdPrefix}-1" onclick="selectElement(this, -1);">
 		${parentFolderIconPath !== null && parentFolderIconPath !== "" ? `<img src="${parentFolderIconPath}">` : ""}
-		dossier parent
+		${parentFolderName}
 	</div>`;
 }
 
