@@ -101,6 +101,212 @@ const rootFiles = [
 		"type": "jpg",
 		"name": "Tanager-Shapiro.jpg",
 		"url": "img/birds/Tanager-Shapiro.jpg"
+	},
+	{
+		"type": "folder",
+		"name": "pictures"
+	},
+	{
+		"type": "folder",
+		"name": "animaux"
+	},
+	{
+		"type": "jpeg",
+		"name": "cat.jpeg",
+		"url": "img/cats/cat.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "catz.jpg",
+		"url": "img/cats/catz.jpg"
+	},
+	{
+		"type": "jpg",
+		"name": "domestic-cat.jpg",
+		"url": "img/cats/domestic-cat.jpg"
+	},
+	{
+		"type": "jpeg",
+		"name": "kittens.jpeg",
+		"url": "img/cats/kittens.jpeg"
+	},
+	{
+		"type": "jpeg",
+		"name": "cats-party.jpeg",
+		"url": "img/cats/cats-party.jpeg"
+	},
+	{
+		"type": "jpeg",
+		"name": "black-cat-back.jpeg",
+		"url": "img/cats/black-cat-back.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "cats1.jpg",
+		"url": "img/cats/cats1.jpg"
+	},
+	{
+		"type": "jpg",
+		"name": "kittens1.jpg",
+		"url": "img/cats/kittens1.jpg"
+	},
+	{
+		"type": "jpeg",
+		"name": "egypt-kitty.jpeg",
+		"url": "img/cats/egypt-kitty.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "white-cat-min.jpg",
+		"url": "img/cats/white-cat-min.jpg"
+	},
+	{
+		"type": "jpg",
+		"name": "p07ryyyj.jpg",
+		"url": "img/cats/p07ryyyj.jpg"
+	},
+	{
+		"type": "png",
+		"name": "dog.png",
+		"url": "img/dogs/dog.jpeg"
+	},
+	{
+		"type": "png",
+		"name": "zouzou.png",
+		"url": "img/dogs/zouzou.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "puppy-on-garden.jpg",
+		"url": "img/dogs/puppy-on-garden.jpg"
+	},
+	{
+		"type": "png",
+		"name": "angry_chihuahua.png",
+		"url": "img/dogs/angry_chihuahua.png"
+	},
+	{
+		"type": "jpg",
+		"name": "fuffy-dog.jpg",
+		"url": "img/dogs/fuffy-dog.jpg"
+	},
+	{
+		"type": "jpeg",
+		"name": "bird2.jpeg",
+		"url": "img/birds/bird2.jpeg"
+	},
+	{
+		"type": "jpeg",
+		"name": "bird.jpeg",
+		"url": "img/birds/bird.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "Tanager-Shapiro.jpg",
+		"url": "img/birds/Tanager-Shapiro.jpg"
+	},
+	{
+		"type": "folder",
+		"name": "pictures"
+	},
+	{
+		"type": "folder",
+		"name": "animaux"
+	},
+	{
+		"type": "jpeg",
+		"name": "cat.jpeg",
+		"url": "img/cats/cat.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "catz.jpg",
+		"url": "img/cats/catz.jpg"
+	},
+	{
+		"type": "jpg",
+		"name": "domestic-cat.jpg",
+		"url": "img/cats/domestic-cat.jpg"
+	},
+	{
+		"type": "jpeg",
+		"name": "kittens.jpeg",
+		"url": "img/cats/kittens.jpeg"
+	},
+	{
+		"type": "jpeg",
+		"name": "cats-party.jpeg",
+		"url": "img/cats/cats-party.jpeg"
+	},
+	{
+		"type": "jpeg",
+		"name": "black-cat-back.jpeg",
+		"url": "img/cats/black-cat-back.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "cats1.jpg",
+		"url": "img/cats/cats1.jpg"
+	},
+	{
+		"type": "jpg",
+		"name": "kittens1.jpg",
+		"url": "img/cats/kittens1.jpg"
+	},
+	{
+		"type": "jpeg",
+		"name": "egypt-kitty.jpeg",
+		"url": "img/cats/egypt-kitty.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "white-cat-min.jpg",
+		"url": "img/cats/white-cat-min.jpg"
+	},
+	{
+		"type": "jpg",
+		"name": "p07ryyyj.jpg",
+		"url": "img/cats/p07ryyyj.jpg"
+	},
+	{
+		"type": "png",
+		"name": "dog.png",
+		"url": "img/dogs/dog.jpeg"
+	},
+	{
+		"type": "png",
+		"name": "zouzou.png",
+		"url": "img/dogs/zouzou.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "puppy-on-garden.jpg",
+		"url": "img/dogs/puppy-on-garden.jpg"
+	},
+	{
+		"type": "png",
+		"name": "angry_chihuahua.png",
+		"url": "img/dogs/angry_chihuahua.png"
+	},
+	{
+		"type": "jpg",
+		"name": "fuffy-dog.jpg",
+		"url": "img/dogs/fuffy-dog.jpg"
+	},
+	{
+		"type": "jpeg",
+		"name": "bird2.jpeg",
+		"url": "img/birds/bird2.jpeg"
+	},
+	{
+		"type": "jpeg",
+		"name": "bird.jpeg",
+		"url": "img/birds/bird.jpeg"
+	},
+	{
+		"type": "jpg",
+		"name": "Tanager-Shapiro.jpg",
+		"url": "img/birds/Tanager-Shapiro.jpg"
 	}
 ]
 

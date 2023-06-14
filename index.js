@@ -142,8 +142,8 @@ const selectElementFromName = (fileName) => {
 }
 
 const navigateToFolder = (folder) => {
-	selectedElement = null;
 	console.info(`navigating to folder`, folder);
+	selectedElement = null;
 	dialogFileList.innerHTML = "";
 	pathList.push(folder.data.name);
 	renderDialog();
@@ -152,6 +152,7 @@ const navigateToFolder = (folder) => {
 const navigateUp = () => {
 	console.info("navigating up");
 	selectedElement = null;
+	dialogFileList.innerHTML = "";
 	pathList.pop();
 	renderDialog();
 }
@@ -285,6 +286,7 @@ const renderDialogContent = (data) => {
 const renderDialog = () => {
 	const path = pathList.join("/");
 	console.info(`loading ${path}`);
+	dialogFileList.innerHTML = loaderHTML;
 	fetchDocs(path)
 		.then(data => {
 			renderDialogContent(data);
@@ -413,7 +415,7 @@ tinymce.init({
     ],
     toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist outdent indent | link image | preview media fullscreen | ' +
-      'forecolor backcolor emoticons | help | save example',
+      'forecolor backcolor emoticons | help | save',
     // menubar: false,
 	// statusbar: false,
 	language: "fr_FR",

@@ -22,8 +22,7 @@
 }
 
 dialog {
-	width: 40%;
-	/* max-height: 55% */
+	width: 60%;
 }
 
 .dialog-title-bar {
@@ -37,7 +36,7 @@ dialog {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	max-height: 300px;
+	max-height: 400px;
 	margin-bottom: 10px;
 	border: 1px solid #000000;
 }
