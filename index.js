@@ -48,6 +48,9 @@ async function fetchDocs_server(path) {
 	});
 
 	const response = await fetch(myRequest);
+	if (response.status != 200) {
+		throw "expected status code to be 200!";
+	}
 	const jsonData = await response.json();
 	return jsonData;
 }
@@ -299,6 +302,8 @@ const renderDialog = () => {
 			// we still want to render a folder to give the user the ability
 			// to go up in the directory tree.
 			renderDialogContent([]);
+			// since an error occured, we don't want to select the file
+			fileToSelect = "";
 		});
 }
 

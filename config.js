@@ -17,14 +17,14 @@ const musescoreIconPath = "icons/musescore_icon.png";
 const defaultFileIconPath = "icons/file_icon.png";
 
 // base folder to display in the path
-const defaultRootFolder = "medias";
+const defaultRootFolder = "media";
 
 // part of the url to remove when editing a link/image url to navigate to the correct folder on the server
 // don't include the http or https to truncate both
 const baseUrl = "";
 
 // url used to fetch the server content
-const retrieveListUrl = "";
+const retrieveListUrl = "http://192.168.1.222:3000/";
 
 // not used
 const externalPluginBaseUrl = "../";
