@@ -21,10 +21,12 @@ const defaultRootFolder = "media";
 
 // part of the url to remove when editing a link/image url to navigate to the correct folder on the server
 // don't include the http or https to truncate both
-const baseUrl = "";
+const baseUrl = "media";
 
 // url used to fetch the server content
 const retrieveListUrl = "http://192.168.1.222:3000/";
+// url used to upload files
+const uploadFileUrl = "postacceptor.php"
 
 // not used
 const externalPluginBaseUrl = "../";

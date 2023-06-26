@@ -5,10 +5,18 @@ const dialogTitleBarPath = dialog.querySelector(".title-bar-path");
 const dialogFileList = dialog.querySelector(".dialog-file-list");
 const dialogFilePreview = dialog.querySelector(".dialog-file-preview");
 
+// the path we've navigated to
 let pathList = [];
+// the current selected element
 let selectedElement = null;
+// a file to select when opening the dialog
 let fileToSelect = "";
+// local cache of the fetched data
 let fetchedData;
+
+const getPath = () => {
+	return pathList.join("/");
+}
 
 function getRandomArbitrary(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
@@ -19,7 +27,7 @@ async function fetchDocs_hardCoded(url) {
 	const timeout = getRandomArbitrary(100, 1000);
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
-			console.info(`took ${timeout} ms`);
+			console.debug(`took ${timeout} ms`);
 			if (data) {
 				resolve(data);
 			}
@@ -55,6 +63,62 @@ async function fetchDocs_server(path) {
 	return jsonData;
 }
 
+// another flavor of 'uploadHandler' that uses the fetch api
+const fetchUploadHandler = async (file, metadata, progress) => {
+	const myHeaders = new Headers();
+
+	const formData = new FormData();
+	formData.append("file", file, metadata.fileName);
+	formData.set("u", getPath());
+
+	const myRequest = new Request(uploadFileUrl, {
+		method: "POST",
+		headers: myHeaders,
+		body: formData,
+	});
+
+	const response = await fetch(myRequest);
+	if (response.status != 200) {
+		throw "expected status code to be 200!";
+	}
+	const jsonData = await response.json();
+	return jsonData;
+}
+
+// used to upload files to the server
+const uploadHandler = (file, metadata, progress) => new Promise((resolve, reject) => {
+	console.debug("uploading...");
+
+	const xhr = new XMLHttpRequest();
+	xhr.withCredentials = false;
+	xhr.open('POST', uploadFileUrl);
+
+	xhr.upload.onprogress = (e) => {
+	  progress(e.loaded / e.total * 100);
+	};
+  
+	xhr.onload = () => {
+		const response = JSON.parse(xhr.responseText);
+
+		if (xhr.status != 200) {
+			reject({message: 'HTTP Error: ' + xhr.status, remove: true, ...response});
+			return;
+		}
+
+		resolve(response);
+	};
+  
+	xhr.onerror = () => {
+		reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+	};
+  
+	const formData = new FormData();
+	formData.append("file", file, metadata.fileName);
+	formData.set("u", getPath());
+  
+	xhr.send(formData);
+});
+
 // https://stackoverflow.com/questions/9068156/server-side-file-browsing
 const fileBrowser = (cb) => {
 	const input = document.createElement('input');
@@ -63,24 +127,8 @@ const fileBrowser = (cb) => {
 
 	input.addEventListener('change', (e) => {
 		const file = e.target.files[0];
-
-		const reader = new FileReader();
-		reader.addEventListener('load', () => {
-			/*
-			Note: Now we need to register the blob in TinyMCEs image blob
-			registry. In the next release this part hopefully won't be
-			necessary, as we are looking to handle it internally.
-			*/
-			const id = 'blobid' + (new Date()).getTime();
-			const blobCache =  tinymce.activeEditor.editorUpload.blobCache;
-			const base64 = reader.result.split(',')[1];
-			const blobInfo = blobCache.create(id, file, base64);
-			blobCache.add(blobInfo);
-
-			/* call the callback and populate the Title field with the file name */
-			cb(blobInfo.blobUri(), { title: file.name });
-		});
-		reader.readAsDataURL(file);
+		const metadata = { fileName: file.name };
+		cb(file, metadata);
 	});
 
 	input.click();
@@ -241,8 +289,16 @@ const addDialogListeners = (cb) => {
 
 	addBtn.onclick = () => {
 		fileBrowser((data, metadata) => {
-			console.debug(data);
-			console.debug(metadata);
+			uploadHandler(data, metadata, (percent) => console.log(percent))
+				.then(result => {
+					console.info("upload successful!");
+					console.debug(result);
+					renderDialog();
+				})
+				.catch(error => {
+					console.info("an error occurred while uploading the file")
+					console.debug(error);
+				});
 		});
 	};
 	xButton.onclick = closeDialog;
@@ -250,10 +306,11 @@ const addDialogListeners = (cb) => {
 
 	okButton.onclick = () => {
 		console.debug(selectedElement);
-		if (selectedElement.data.type === "folder")
+		if (selectedElement.data.type === "folder") {
 			navigateToFolder(selectedElement)
-		else
+		} else {
 			closeDialogForSuccess(cb);
+		}
 	};
 
 	elementsContainer.ondblclick = () => {
@@ -271,7 +328,7 @@ const addDialogListeners = (cb) => {
 const renderDialogContent = (data) => {
 	console.debug(data);
 	fetchedData = data;
-	// potentially sort the data
+	// TODO: potentially sort the data
 	// data.sort((e1, e2) => e1.name.localeCompare(e2.name));
 	dialogFileList.innerHTML = renderContent(data);
 	if (selectedElement !== null) {
@@ -283,7 +340,7 @@ const renderDialogContent = (data) => {
 }
 
 const renderDialog = () => {
-	const path = pathList.join("/");
+	const path = getPath();
 	console.info(`loading ${path}`);
 	dialogFileList.innerHTML = loaderHTML;
 	fetchDocs(path)
@@ -295,6 +352,7 @@ const renderDialog = () => {
 				// reset the fileToSelect to empty string so that we don't try to reselect
 				// the file when we navigate
 				fileToSelect = "";
+				// TODO: scroll the selected element into view
 			}
 		})
 		.catch(error => {
@@ -341,70 +399,12 @@ const extractFileInfo = (originalFilePath) => {
 }
 
 const filePickerHandler = (cb, value, meta) => {
-	console.debug("value", value);
-	console.debug("meta", meta);
 	if (value !== "") {
 		extractFileInfo(value);
 	}
 	addDialogListeners(cb);
 	filePickerDialogHandler();
 };
-
-const uploadHandler = (blobInfo, progress) => new Promise((resolve, reject) => {
-	console.log("uploading...");
-
-	const xhr = new XMLHttpRequest();
-	xhr.withCredentials = false;
-	xhr.open('POST', 'postAcceptor.php');
-  
-	xhr.upload.onprogress = (e) => {
-	  progress(e.loaded / e.total * 100);
-	};
-  
-	xhr.onload = () => {
-	  if (xhr.status === 403) {
-		reject({ message: 'HTTP Error: ' + xhr.status, remove: true });
-		return;
-	  }
-  
-	  if (xhr.status < 200 || xhr.status >= 300) {
-		reject('HTTP Error: ' + xhr.status);
-		return;
-	  }
-  
-	  const json = JSON.parse(xhr.responseText);
-  
-	  if (!json || typeof json.location !== 'string') {
-		reject('Invalid JSON: ' + xhr.responseText);
-		return;
-	  }
-  
-	  resolve(json.location);
-	};
-  
-	xhr.onerror = () => {
-	  reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
-	};
-  
-	const formData = new FormData();
-	formData.append('file', blobInfo.blob(), blobInfo.filename());
-
-	console.log(formData);
-  
-	xhr.send(formData);
-});
-
-const fetchLinkList = () => [
-    { title: '{companyname} Home Page', value: '{companyurl}' },
-    { title: '{companyname} Blog', value: '{companyurl}/blog' },
-    { title: '{productname} Support resources',
-      menu: [
-        { title: '{productname} Documentation', value: '{companyurl}/docs/' },
-        { title: '{productname} on Stack Overflow', value: '{communitysupporturl}' },
-        { title: '{productname} GitHub', value: 'https://github.com/tinymce/' }
-      ]
-    }
-];
 
 tinymce.init({
     selector: 'textarea#myTextArea',
