@@ -1,3 +1,6 @@
+// v0.0.1
+// 02/07/2023
+
 const fileListClass = "file-list";
 const fileSelectedClass = "file-selected";
 const elementContainerClass = "element_container";

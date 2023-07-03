@@ -1,3 +1,6 @@
+// v0.0.1
+// 02/07/2023
+
 const dialog = document.querySelector("#myDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
 const dialogTitleBar = dialog.querySelector(".dialog-title-bar");
@@ -414,13 +417,13 @@ tinymce.init({
       'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
       'media', 'table', 'emoticons', 'template', 'help', 'save',
     ],
-    toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | link image | preview media fullscreen | ' +
-      'forecolor backcolor emoticons | help | save',
-    // menubar: false,
-	// statusbar: false,
+    toolbar: 'undo redo | styles | bold italic underline | forecolor backcolor emoticons | alignleft aligncenter alignright alignjustify | ' +
+      'bullist numlist outdent indent | table | link image media  | fullscreen preview | code ' +
+      '',
+    menubar: false,
+	statusbar: false,
 	language: "fr_FR",
 
-	file_picker_types: 'image,file',
+	file_picker_types: 'image,file,media',
 	file_picker_callback: filePickerHandler,
 });
