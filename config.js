@@ -21,8 +21,8 @@ const defaultFileIconPath = "icons/file_icon.png";
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
 const acceptedImageFileExtensions = ["gif", "jpg", "png"];
+const acceptedMediaFileExtensions = ["mp4"];
 const acceptedLinkFileExtensions = ["pdf", "mscz", "midi", "mdi"];
-const acceptedMediaFileExtensions = ["*"];
 
 // part of the url to remove when editing a link/image url to navigate to the correct folder on the server
 // don't include the http or https to truncate both
