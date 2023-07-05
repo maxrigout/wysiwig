@@ -24,7 +24,14 @@ class Response {
    *********************************************/
   $imageFolder = "img/";
 
-  $acceptedFileExtensions = array("gif", "jpg", "png");
+  $acceptedImageFileExtensions = array("gif", "jpg", "jpeg" , "png");
+  $acceptedMediaFileExtensions = array("mp4");
+  $acceptedLinkFileExtensions = array("pdf", "mscz", "midi", "mdi");
+
+  $acceptedFileExtensions = array_merge($acceptedImageFileExtensions, $acceptedMediaFileExtensions, $acceptedLinkFileExtensions);
+
+  $response = new Response();
+  $response->debug = array('files' => $_FILES, 'server' => $_SERVER, 'post' => $_POST);
 
   if (isset($_SERVER['HTTP_ORIGIN'])) {
     // same-origin requests won't set an origin. If the origin is set, it must be valid.
@@ -32,6 +39,10 @@ class Response {
       header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
     } else {
       header("HTTP/1.1 403 Origin Denied");
+      if (!$debug_enabled) {
+        $response->debug = null;
+      }
+      echo json_encode($response);
       return;
     }
   }
@@ -40,11 +51,6 @@ class Response {
   if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     header("Access-Control-Allow-Methods: POST, OPTIONS");
     return;
-  }
-
-  $response = new Response();
-  if ($debug_enabled) {
-  	$response->debug = array('files' => $_FILES, 'server' => $_SERVER, 'post' => $_POST);
   }
 
   $temp = $_FILES["file"];
@@ -62,17 +68,23 @@ class Response {
         header("HTTP/1.1 400 Invalid file name.");
         $response->status = "error";
         $response->error = "invalid file name!";
+        if (!$debug_enabled) {
+          $response->debug = null;
+        }
         echo json_encode($response);
         return;
     }
 
     // Verify extension
     if (!in_array(strtolower(pathinfo($temp['name'], PATHINFO_EXTENSION)), $acceptedFileExtensions)) {
-        header("HTTP/1.1 400 Invalid extension.");
-		$response->status = "error";
-		$response->error = "extension needs to be one of the following: " . implode(", ", $acceptedFileExtensions);
-		echo json_encode($response);
-        return;
+      header("HTTP/1.1 400 Invalid extension.");
+		  $response->status = "error";
+		  $response->error = "extension needs to be one of the following: " . implode(", ", $acceptedFileExtensions);
+      if (!$debug_enabled) {
+        $response->debug = null;
+      }
+		  echo json_encode($response);
+      return;
     }
 
 	// TODO: use the "u" param to determine where to put the file
@@ -84,22 +96,28 @@ class Response {
 
   $filetowrite = $filetowrite . $temp['name'];
   $absoluteFilePath = realpath($filetowrite);
+  $response->debug = array_merge($response->debug, array('fileWritten' => $absoluteFilePath));
 
   if (!move_uploaded_file($temp['tmp_name'], $filetowrite)) {
 		header("HTTP/1.1 500 Server Error");
 		$response->status = "error";
 		$response->error = "unable to move the file... Attempting to write the file to:" . $absoluteFilePath;
 	} else {
-    array_push($response->debug, array('fileWritten' => $absoluteFilePath));
 	  $response->status = "success";
+  }
+  if (!$debug_enabled) {
+    $response->debug = null;
   }
 	echo json_encode($response);
 
   } else {
     // Notify editor that the upload failed
     header("HTTP/1.1 500 Server Error");
-	$response->status = "error";
-	$response->error = "the upload has failed!";
-	echo json_encode($response);
+	  $response->status = "error";
+	  $response->error = "the upload has failed!";
+    if (!$debug_enabled) {
+      $response->debug = null;
+    }
+  	echo json_encode($response);
   }
 ?>
