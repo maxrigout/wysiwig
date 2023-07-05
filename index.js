@@ -175,7 +175,6 @@ const updatePreview = () => {
 }
 
 const updateFolderPath = (path) => {
-	// dialogTitleBarPath.innerHTML = defaultRootFolder + (pathList.length === 0 ? "" : "/") + pathList.join("/");
 	dialogTitleBarPath.innerHTML = path;
 }
 
@@ -363,7 +362,6 @@ const renderDialogContent = (data) => {
 		selectElement(selectedNode, selectedElement.index);
 	}
 	updatePreview();
-	// updateFolderPath();
 }
 
 const renderDialog = () => {
@@ -374,6 +372,8 @@ const renderDialog = () => {
 		.then(data => {
 			updateFolderPath(data.folder);
 			renderDialogContent(data.data);
+
+			// we need to select the previously selected file and scroll the element into view
 			if (fileToSelect !== "") {
 				console.debug("selecting file", fileToSelect);
 				selectElementFromName(fileToSelect);

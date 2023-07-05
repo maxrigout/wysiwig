@@ -24,9 +24,6 @@ const acceptedImageFileExtensions = ["gif", "jpg", "png"];
 const acceptedLinkFileExtensions = ["pdf", "mscz", "midi", "mdi"];
 const acceptedMediaFileExtensions = ["*"];
 
-// base folder to display in the path
-const defaultRootFolder = "media";
-
 // part of the url to remove when editing a link/image url to navigate to the correct folder on the server
 // don't include the http or https to truncate both
 const baseUrl = "img";
