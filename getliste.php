@@ -1,7 +1,5 @@
 <?php
 
-// https://www.tiny.cloud/docs/advanced/php-upload-handler/#examplepostacceptorphp
-
 // error_reporting(E_ERROR | E_PARSE);
 
 class Response {
@@ -79,6 +77,15 @@ function extractExtention(string $fileName): string | null {
 	return substr($fileName, $pos + 1);
 }
 
+function echo_response() {
+	global $debug_enabled, $response;
+	header('Content-Type: application/json; charset=utf-8');
+	if (!$debug_enabled) {
+		$response->debug = null;
+	}
+	echo json_encode($response);
+}
+
 /*************************************************************************
 * Set this flag to false to prevent returning debug info to the client! *
 *************************************************************************/
@@ -100,7 +107,7 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
 		header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
 	} else {
 		header("HTTP/1.1 403 Origin Denied");
-		echo json_encode($response);
+		echo_response();
 		return;
 	}
 }
@@ -123,7 +130,7 @@ $scannedFiles = scandir($requestedFolder);
 
 if ($scannedFiles === false) {
 	header("HTTP/1.1 500 Internal Server Error");
-	echo json_encode($response);
+	echo_response();
 	return;
 }
 
@@ -161,12 +168,18 @@ foreach ($scannedFiles as $sf) {
 	}
 	array_push($response->data, $newEntry);
 }
-$response->folder = $requestedFolder;
+
+// need to remove the leading . and .. and /
+$finalIndex = 0;
+while ($requestedFolder[$finalIndex] === "." || $requestedFolder[$finalIndex] === "/") {
+	$finalIndex++;
+}
+$response->folder = substr($requestedFolder, $finalIndex);
 
 if ($debug_enabled) {
 	$response->debug = array_merge($response->debug, array('scanned_files' => $scannedFiles), array('file_objects' => $fileModels));
 }
 
-echo json_encode($response);
+echo_response();
 
 ?>
