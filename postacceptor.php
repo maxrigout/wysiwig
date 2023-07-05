@@ -78,16 +78,18 @@ class Response {
 	// TODO: use the "u" param to determine where to put the file
 	$selectedFolder = $_POST["u"];
 
-    // Accept upload if there was no origin, or if it is an accepted origin
-    $filetowrite = $imageFolder . $temp['name'];
+  // Accept upload if there was no origin, or if it is an accepted origin
+  $filetowrite = $imageFolder . $temp['name'];
+  $absoluteFilePath = realpath($filetowrite);
 
-    if (!move_uploaded_file($temp['tmp_name'], $filetowrite)) {
+  if (!move_uploaded_file($temp['tmp_name'], $filetowrite)) {
 		header("HTTP/1.1 500 Server Error");
 		$response->status = "error";
-		$response->error = "unable to move the file...";
-	}
-
-	$response->status = "success";
+		$response->error = "unable to move the file... Attempting to write the file to:" . $absoluteFilePath;
+	} else {
+    array_push($response->debug, array('fileWritten' => $absoluteFilePath));
+	  $response->status = "success";
+  }
 	echo json_encode($response);
 
   } else {

@@ -1,4 +1,4 @@
-// v0.0.1
+// v0.0.2
 // 02/07/2023
 
 const fileListClass = "file-list";
@@ -19,6 +19,11 @@ const pdfIconPath = "icons/pdf_icon.png";
 const musescoreIconPath = "icons/musescore_icon.png";
 const defaultFileIconPath = "icons/file_icon.png";
 
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
+const acceptedImageFileExtensions = ["gif", "jpg", "png"];
+const acceptedLinkFileExtensions = ["pdf", "mscz", "midi", "mdi"];
+const acceptedMediaFileExtensions = ["*"];
+
 // base folder to display in the path
 const defaultRootFolder = "media";
 
@@ -27,7 +32,7 @@ const defaultRootFolder = "media";
 const baseUrl = "media";
 
 // url used to fetch the server content
-const retrieveListUrl = "http://192.168.1.222:3000/";
+const retrieveListUrl = "getliste.php";
 // url used to upload files
 const uploadFileUrl = "postacceptor.php"
 
@@ -38,6 +43,6 @@ const externalPluginBaseUrl = "../";
 const loaderHTML = `<div class="lds-ring"><div></div><div></div><div></div><div></div></div>`;
 
 const fetchDocs = async (path) => {
-	// return await fetchDocs_server(path);
-	return await fetchDocs_hardCoded(path);
+	return await fetchDocs_server(path);
+	// return await fetchDocs_hardCoded(path);
 }

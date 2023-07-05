@@ -1,5 +1,12 @@
-// v0.0.1
+// v0.0.2
 // 02/07/2023
+
+// lien:
+// 		pdf, mscz, midi, mdi
+// images:
+//		png, gif, jpeg
+// media
+//		
 
 const dialog = document.querySelector("#myDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
@@ -16,6 +23,15 @@ let selectedElement = null;
 let fileToSelect = "";
 // local cache of the fetched data
 let fetchedData;
+// insert type determined by which button was clicked
+// either "insert link", "insert image" or "insert media"
+let insertType;
+// 'insert type' map to file extensions
+const acceptedExtensions = {
+	file: acceptedLinkFileExtensions,
+	image: acceptedImageFileExtensions,
+	media: acceptedMediaFileExtensions
+};
 
 const getPath = () => {
 	return pathList.join("/");
@@ -124,9 +140,11 @@ const uploadHandler = (file, metadata, progress) => new Promise((resolve, reject
 
 // https://stackoverflow.com/questions/9068156/server-side-file-browsing
 const fileBrowser = (cb) => {
+	const acceptedFileExtensions = acceptedExtensions[insertType].map(e => "." + e).join(",");
+	console.log(acceptedFileExtensions);
 	const input = document.createElement('input');
 	input.setAttribute('type', 'file');
-	input.setAttribute('accept', 'image/*');
+	input.setAttribute('accept', acceptedFileExtensions);
 
 	input.addEventListener('change', (e) => {
 		const file = e.target.files[0];
@@ -296,6 +314,7 @@ const addDialogListeners = (cb) => {
 				.then(result => {
 					console.info("upload successful!");
 					console.debug(result);
+					fileToSelect = metadata.fileName;
 					renderDialog();
 				})
 				.catch(error => {
@@ -348,14 +367,15 @@ const renderDialog = () => {
 	dialogFileList.innerHTML = loaderHTML;
 	fetchDocs(path)
 		.then(data => {
-			renderDialogContent(data);
+			renderDialogContent(data.data);
 			if (fileToSelect !== "") {
-				console.debug("selecting previously selected file", fileToSelect);
+				console.debug("selecting file", fileToSelect);
 				selectElementFromName(fileToSelect);
-				// reset the fileToSelect to empty string so that we don't try to reselect
-				// the file when we navigate
-				fileToSelect = "";
 				// TODO: scroll the selected element into view
+
+				// reset the fileToSelect to empty string so that we don't try to reselect
+				// the file when we navigate to a different folder
+				fileToSelect = "";
 			}
 		})
 		.catch(error => {
@@ -371,6 +391,10 @@ const renderDialog = () => {
 const filePickerDialogHandler = () => {
 	dialog.showModal();
 	renderDialog();
+}
+
+const setInsertType = (type) => {
+	insertType = type;
 }
 
 const extractFileInfo = (originalFilePath) => {
@@ -402,9 +426,24 @@ const extractFileInfo = (originalFilePath) => {
 }
 
 const filePickerHandler = (cb, value, meta) => {
+	console.debug(value);
+	console.debug(meta);
+	/*
+	meta:
+		lien:
+			fieldname: "url"
+			filetype: "file"
+		image:
+			fieldname: "src"
+			filetype: "image"
+		media:
+			fieldname: "source"
+			filetype: "media"
+	*/
 	if (value !== "") {
 		extractFileInfo(value);
 	}
+	setInsertType(meta.filetype);
 	addDialogListeners(cb);
 	filePickerDialogHandler();
 };
