@@ -32,7 +32,7 @@ class File {
 $accepted_origins = array("http://localhost:3000", "http://192.168.1.1", "http://example.com");
 
 $acceptedImageFileExtensions = array("gif", "jpg", "jpeg" , "png");
-$acceptedMediaFileExtensions = array("mp4");
+$acceptedMediaFileExtensions = array();
 $acceptedLinkFileExtensions = array("pdf", "mscz", "midi", "mdi");
 
 $acceptedExtensions = array("image" => $acceptedImageFileExtensions, "file" => $acceptedLinkFileExtensions, "media" => $acceptedMediaFileExtensions);
@@ -48,7 +48,7 @@ function isExtAccepted(string | null $extension): bool {
 		return true;
 	}
 	global $acceptedExtensions, $filesType;
-	return in_array($extension, $acceptedExtensions[$filesType]);
+	return in_array($extension, $acceptedExtensions[$filesType]) || sizeof($acceptedExtensions[$filesType]) === 0;
 }
 
 function isFileExcluded(File $file): bool {
