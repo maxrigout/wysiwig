@@ -1,5 +1,5 @@
-// v0.0.2
-// 02/07/2023
+// v0.0.3
+// 05/07/2023
 
 // lien:
 // 		pdf, mscz, midi, mdi
@@ -389,6 +389,7 @@ const renderDialog = () => {
 			console.error(error);
 			// we still want to render a folder to give the user the ability
 			// to go up in the directory tree.
+			pathList = [];
 			renderDialogContent([]);
 			// since an error occured, we don't want to select the file
 			fileToSelect = "";
@@ -410,9 +411,9 @@ const extractFileInfo = (originalFilePath) => {
 	let filePath = originalFilePath.substring(0, i);
 
 	// truncate the base url if it exists
-	const j = filePath.indexOf(baseUrl);
+	const j = filePath.indexOf(basePath);
 	if (j !== -1) {
-		filePath = filePath.substring(j + baseUrl.length);
+		filePath = filePath.substring(j + basePath.length);
 	} else {
 		// TODO: should we still continue?
 	}
@@ -432,6 +433,18 @@ const extractFileInfo = (originalFilePath) => {
 	console.debug(pathList);
 }
 
+const shouldSelectPreviousFile = (srcUrl) => {
+	// if it's empty we don't need to select a file
+	if (srcUrl === "") {
+		return false;
+	}
+	if (srcUrl.indexOf("http://") !== -1 || srcUrl.indexOf("https://") !== -1) {
+		// we should select the file if it's the same host
+		return srcUrl.indexOf(host) !== -1;
+	}
+	return true;
+}
+
 const filePickerHandler = (cb, value, meta) => {
 	console.debug(value);
 	console.debug(meta);
@@ -447,7 +460,7 @@ const filePickerHandler = (cb, value, meta) => {
 			fieldname: "source"
 			filetype: "media"
 	*/
-	if (value !== "") {
+	if (shouldSelectPreviousFile(value)) {
 		extractFileInfo(value);
 	}
 	setInsertType(meta.filetype);

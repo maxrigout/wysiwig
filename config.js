@@ -1,5 +1,5 @@
-// v0.0.2
-// 02/07/2023
+// v0.0.3
+// 05/07/2023
 
 const fileListClass = "file-list";
 const fileSelectedClass = "file-selected";
@@ -24,9 +24,11 @@ const acceptedImageFileExtensions = ["gif", "jpg", "png"];
 const acceptedMediaFileExtensions = ["mp4"];
 const acceptedLinkFileExtensions = ["pdf", "mscz", "midi", "mdi"];
 
+// the host identifying your site without the http or https
+const host = "localhost:3000"
 // part of the url to remove when editing a link/image url to navigate to the correct folder on the server
 // don't include the http or https to truncate both
-const baseUrl = "img";
+const basePath = "img";
 
 // url used to fetch the server content
 const retrieveListUrl = "getliste.php";
