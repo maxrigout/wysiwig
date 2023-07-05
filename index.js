@@ -48,7 +48,7 @@ async function fetchDocs_hardCoded(url) {
 		setTimeout(() => {
 			console.debug(`took ${timeout} ms`);
 			if (data) {
-				resolve(data);
+				resolve({data: data, folder: url});
 			}
 			else {
 				reject({error: "no data available"});
