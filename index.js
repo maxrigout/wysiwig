@@ -67,6 +67,7 @@ async function fetchDocs_server(path) {
 	// for a form encoded body...
 	const body = new URLSearchParams();
 	body.append("u", path);
+	body.append("type", insertType); // will either be file, media or image
 
 	const myRequest = new Request(retrieveListUrl, {
 		method: "POST",
