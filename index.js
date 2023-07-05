@@ -174,8 +174,9 @@ const updatePreview = () => {
 	filePreview.innerHTML = `<img src="${selectedElement.data.url}">`;
 }
 
-const updateFolderPath = () => {
-	dialogTitleBarPath.innerHTML = defaultRootFolder + (pathList.length === 0 ? "" : "/") + pathList.join("/");
+const updateFolderPath = (path) => {
+	// dialogTitleBarPath.innerHTML = defaultRootFolder + (pathList.length === 0 ? "" : "/") + pathList.join("/");
+	dialogTitleBarPath.innerHTML = path;
 }
 
 const selectElement = (e, i) => {
@@ -209,6 +210,10 @@ const selectElementFromName = (fileName) => {
 	const node = document.querySelector(`#${elementIdPrefix + index}`);
 	console.log(node);
 	selectElement(node, index);
+}
+
+const scrollSelectedElementIntoView = () => {
+	selectedElement.node.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
 }
 
 const navigateToFolder = (folder) => {
@@ -358,7 +363,7 @@ const renderDialogContent = (data) => {
 		selectElement(selectedNode, selectedElement.index);
 	}
 	updatePreview();
-	updateFolderPath();
+	// updateFolderPath();
 }
 
 const renderDialog = () => {
@@ -367,11 +372,12 @@ const renderDialog = () => {
 	dialogFileList.innerHTML = loaderHTML;
 	fetchDocs(path)
 		.then(data => {
+			updateFolderPath(data.folder);
 			renderDialogContent(data.data);
 			if (fileToSelect !== "") {
 				console.debug("selecting file", fileToSelect);
 				selectElementFromName(fileToSelect);
-				// TODO: scroll the selected element into view
+				scrollSelectedElementIntoView();
 
 				// reset the fileToSelect to empty string so that we don't try to reselect
 				// the file when we navigate to a different folder

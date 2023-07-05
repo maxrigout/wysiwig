@@ -31,26 +31,26 @@ class File {
    ***************************************************/
   $accepted_origins = array("http://localhost:3000", "http://192.168.1.1", "http://example.com");
 
-  $excludedSystemFolders = array(".", "..");
-  $excludedSystemFiles = array(".DS_Store");
+  $excludedSystemFolderNames = array(".", "..");
+  $excludedSystemFileNames = array(".DS_Store");
 
   $excludedFolders = array();
   $excludedFiles = array();
 
   function isExcluded(string $fileName): bool {
-	global $excludedSystemFolders, $excludedSystemFiles, $excludedFolders, $excludedFiles;
-	return in_array($fileName, $excludedSystemFolders)
-	|| in_array($fileName, $excludedSystemFiles)
-	|| in_array($fileName, $excludedFolders)
-	|| in_array($fileName, $excludedFiles);
+    global $excludedSystemFolderNames, $excludedSystemFileNames, $excludedFolders, $excludedFiles;
+    return in_array($fileName, $excludedSystemFolderNames)
+      || in_array($fileName, $excludedSystemFileNames)
+      || in_array($fileName, $excludedFolders)
+      || in_array($fileName, $excludedFiles);
   }
 
   function extractExtention(string $fileName): string | null {
-	$pos = strrpos($fileName, '.');
-	if ($pos === false) {
-		return null;
-	}
-	return substr($fileName, $pos + 1);
+    $pos = strrpos($fileName, '.');
+    if ($pos === false) {
+      return null;
+    }
+    return substr($fileName, $pos + 1);
   }
 
   /*************************************************************************
@@ -86,6 +86,9 @@ class File {
   }
 
   $requestedFolder = $baseFolder . $_POST["u"];
+  if ($requestedFolder[strlen($requestedFolder)-1] == '/') {
+    $requestedFolder = substr($requestedFolder, 0, strlen($requestedFolder)-1);
+  }
 
   $files = scandir($requestedFolder);
 
@@ -107,7 +110,9 @@ class File {
   }
   $response->folder = $requestedFolder;
 
-  $response->debug = array_merge($response->debug, array('response' => $files));
+  if ($debug_enabled) {
+    $response->debug = array_merge($response->debug, array('response' => $files));
+  }
   echo json_encode($response);
 
 ?>

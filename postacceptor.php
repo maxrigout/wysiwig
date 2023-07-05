@@ -22,7 +22,7 @@ class Response {
   /*********************************************
    * Change this line to set the upload folder *
    *********************************************/
-  $imageFolder = "images/";
+  $imageFolder = "img/";
 
   $acceptedFileExtensions = array("gif", "jpg", "png");
 
@@ -60,9 +60,9 @@ class Response {
     // Sanitize input
     if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
         header("HTTP/1.1 400 Invalid file name.");
-		$response->status = "error";
-		$response->error = "invalid file name!";
-		echo json_encode($response);
+        $response->status = "error";
+        $response->error = "invalid file name!";
+        echo json_encode($response);
         return;
     }
 
@@ -77,9 +77,12 @@ class Response {
 
 	// TODO: use the "u" param to determine where to put the file
 	$selectedFolder = $_POST["u"];
+  $filetowrite = $imageFolder . $selectedFolder;
+  if ($selectedFolder !== "") {
+    $filetowrite = $filetowrite . "/";
+  }
 
-  // Accept upload if there was no origin, or if it is an accepted origin
-  $filetowrite = $imageFolder . $temp['name'];
+  $filetowrite = $filetowrite . $temp['name'];
   $absoluteFilePath = realpath($filetowrite);
 
   if (!move_uploaded_file($temp['tmp_name'], $filetowrite)) {
