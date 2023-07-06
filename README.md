@@ -20,3 +20,8 @@ exemple: https://www.tiny.cloud/docs/demo/full-featured/
 * dans config.js:
 * `baseUrl` pour changer l'url du serveur
 * les `[*]IconPath` pour changer l'addresse des icones (laisser blanc pour ne pas afficher d'url)
+
+## TODO
+- [ ] New folder button
+- [ ] Delete file button
+- [ ] more previews...
