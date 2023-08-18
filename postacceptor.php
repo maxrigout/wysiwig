@@ -12,23 +12,17 @@ class Response {
   /***************************************************
    * Only these origins are allowed to upload images *
    ***************************************************/
-  $accepted_origins = array("http://localhost:3000", "http://192.168.1.1", "http://example.com");
 
   /*************************************************************************
    * Set this flag to false to prevent returning debug info to the client! *
    *************************************************************************/
-  $debug_enabled = true;
 
   /*********************************************
    * Change this line to set the upload folder *
    *********************************************/
-  $imageFolder = "img/";
+  // $imageFolder = "../media/";
 
-  $acceptedImageFileExtensions = array("gif", "jpg", "jpeg" , "png");
-  $acceptedMediaFileExtensions = array("mp4");
-  $acceptedLinkFileExtensions = array("pdf", "mscz", "midi", "mdi");
-
-  $acceptedFileExtensions = array_merge($acceptedImageFileExtensions, $acceptedMediaFileExtensions, $acceptedLinkFileExtensions);
+  require_once "params.php";
 
   $response = new Response();
   $response->debug = array('files' => $_FILES, 'server' => $_SERVER, 'post' => $_POST);
@@ -101,7 +95,7 @@ class Response {
   if (!move_uploaded_file($temp['tmp_name'], $filetowrite)) {
 		header("HTTP/1.1 500 Server Error");
 		$response->status = "error";
-		$response->error = "unable to move the file... Attempting to write the file to:" . $absoluteFilePath;
+		$response->error = "unable to move the file... Attempted to write the file to:" . $absoluteFilePath;
 	} else {
 	  $response->status = "success";
   }

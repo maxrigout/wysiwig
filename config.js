@@ -42,6 +42,6 @@ const externalPluginBaseUrl = "../";
 const loaderHTML = `<div class="lds-ring"><div></div><div></div><div></div><div></div></div>`;
 
 const fetchDocs = async (path) => {
-	// return await fetchDocs_server(path);
-	return await fetchDocs_hardCoded(path);
+	return await fetchDocs_server(path);
+	// return await fetchDocs_hardCoded(path);
 }

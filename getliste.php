@@ -27,13 +27,7 @@ class File {
 /***************************************************
 * Only these origins are allowed to upload images *
 ***************************************************/
-$accepted_origins = array("http://localhost:3000", "http://192.168.1.1", "http://example.com");
-
-$acceptedImageFileExtensions = array("gif", "jpg", "jpeg" , "png");
-$acceptedMediaFileExtensions = array();
-$acceptedLinkFileExtensions = array("pdf", "mscz", "midi", "mdi");
-
-$acceptedExtensions = array("image" => $acceptedImageFileExtensions, "file" => $acceptedLinkFileExtensions, "media" => $acceptedMediaFileExtensions);
+require_once "params.php";
 
 $excludedSystemFolderNames = array(".", "..");
 $excludedSystemFileNames = array(".DS_Store");
@@ -89,7 +83,6 @@ function echo_response() {
 /*************************************************************************
 * Set this flag to false to prevent returning debug info to the client! *
 *************************************************************************/
-$debug_enabled = true;
 
 $response = new Response();
 if ($debug_enabled) {
@@ -99,7 +92,6 @@ if ($debug_enabled) {
 /*********************************************
 * Change this line to set the upload folder *
 *********************************************/
-$baseFolder = "img/";
 
 if (isset($_SERVER['HTTP_ORIGIN'])) {
 	// same-origin requests won't set an origin. If the origin is set, it must be valid.
