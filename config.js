@@ -28,7 +28,7 @@ const acceptedLinkFileExtensions = ["pdf", "mscz", "midi", "mdi"];
 const host = "localhost:3000"
 // part of the url to remove when editing a link/image url to navigate to the correct folder on the server
 // don't include the http or https to truncate both
-const basePath = "img";
+const basePath = "media";
 
 // url used to fetch the server content
 const retrieveListUrl = "getliste.php";

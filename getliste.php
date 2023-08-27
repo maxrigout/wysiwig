@@ -7,16 +7,15 @@ class Response {
 	public string $error;
 	public string $status;
 	public array $data = array();
-	public string $folder;
 }
 
-class FileResponse {
+class File {
 	public string | null $type;
 	public string $name;
 	public string | null $url;
 }
 
-class File {
+class ScannedFile {
 	public string $name;
 	public string | null $extension;
 	public bool $isFolder;
@@ -24,39 +23,30 @@ class File {
 	public string $relativePath;
 }
 
-/***************************************************
-* Only these origins are allowed to upload images *
-***************************************************/
 require_once "params.php";
 
-$excludedSystemFolderNames = array(".", "..");
-$excludedSystemFileNames = array(".DS_Store");
-
-$excludedFolders = array();
-$excludedFiles = array();
-
-function isExtAccepted(string | null $extension): bool {
+function isExtIncluded(string | null $extension): bool {
 	if ($extension === null) {
 		return true;
 	}
-	global $acceptedExtensions, $filesType;
-	return in_array($extension, $acceptedExtensions[$filesType]) || sizeof($acceptedExtensions[$filesType]) === 0;
+	global $includedExtensions, $filesType;
+	return in_array($extension, $includedExtensions[$filesType]) || sizeof($includedExtensions[$filesType]) === 0;
 }
 
-function isFileExcluded(File $file): bool {
+function isFileExcluded(ScannedFile $file): bool {
 	global $excludedSystemFileNames, $excludedFiles;
 	return in_array($file->name, $excludedSystemFileNames)
 	|| in_array($file->name, $excludedFiles)
-	|| !isExtAccepted($file->extension);
+	|| !isExtIncluded($file->extension);
 }
 
-function isFolderExcluded(File $folder): bool {
+function isFolderExcluded(ScannedFile $folder): bool {
 	global $excludedSystemFolderNames, $excludedFolders;
 	return in_array($folder->name, $excludedSystemFolderNames)
 	|| in_array($folder->name, $excludedFolders);
 }
 
-function isExcluded(File $file): bool {
+function isExcluded(ScannedFile $file): bool {
 	if ($file->isFolder) {
 		return isFolderExcluded($file);
 	}
@@ -71,6 +61,32 @@ function extractExtention(string $fileName): string | null {
 	return substr($fileName, $pos + 1);
 }
 
+function scanDirectory(string $directory): array | null {
+	$result = scandir($directory);
+
+	global $response;
+	$response->debug = array_merge($response->debug , array('scanned_files' => $result));
+
+	if ($result === false) {
+		return null;
+	}
+	$scannedFiles = array();
+	foreach ($result as $sf) {
+		$file = new ScannedFile();
+		$file->name = $sf;
+		$file->relativePath = $directory . "/" . $sf;
+		$file->absolutePath = realpath($file->relativePath) . "/" . $sf;
+		$file->isFolder = is_dir($file->relativePath);
+		if ($file->isFolder) {
+			$file->extension = null;
+		} else {
+			$file->extension = extractExtention($sf);
+		}
+		array_push($scannedFiles, $file);
+	}
+	return $scannedFiles;
+}
+
 function echo_response() {
 	global $debug_enabled, $response;
 	header('Content-Type: application/json; charset=utf-8');
@@ -80,19 +96,13 @@ function echo_response() {
 	echo json_encode($response);
 }
 
-/*************************************************************************
-* Set this flag to false to prevent returning debug info to the client! *
-*************************************************************************/
-
 $response = new Response();
-if ($debug_enabled) {
-	$response->debug = array('files' => $_FILES, 'server' => $_SERVER, 'post' => $_POST);
-}
+$response->debug = array('_files' => $_FILES, '_server' => $_SERVER, '_post' => $_POST);
 
-/*********************************************
-* Change this line to set the upload folder *
-*********************************************/
 
+/*
+ *  We first check for if the origin is accepted
+ */
 if (isset($_SERVER['HTTP_ORIGIN'])) {
 	// same-origin requests won't set an origin. If the origin is set, it must be valid.
 	if (in_array($_SERVER['HTTP_ORIGIN'], $accepted_origins)) {
@@ -113,41 +123,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 // TODO: sanitize input
 
 $requestedFolder = $baseFolder . $_POST["u"];
-if ($requestedFolder[strlen($requestedFolder)-1] == '/') {
-	$requestedFolder = substr($requestedFolder, 0, strlen($requestedFolder)-1);
+
+/*
+ * On supprime le dernier '/' s'il y en a un
+ */
+if ($requestedFolder[strlen($requestedFolder) - 1] == '/') {
+	$requestedFolder = substr($requestedFolder, 0, strlen($requestedFolder) - 1);
 }
+
 $filesType = $_POST["type"];
 
-$scannedFiles = scandir($requestedFolder);
+$scannedFiles = scanDirectory($requestedFolder);
 
-if ($scannedFiles === false) {
+if ($scannedFiles === null) {
 	header("HTTP/1.1 500 Internal Server Error");
+	$response->status = "error";
+	$response->error = "unable to scan dirrectory: " . $requestedFolder;
 	echo_response();
 	return;
 }
 
-$fileModels = array();
+$files = array();
 
-foreach ($scannedFiles as $sf) {
-	$file = new File();
-	$file->name = $sf;
-	$file->relativePath = $requestedFolder . "/" . $sf;
-	$file->absolutePath = realpath($file->relativePath);
-	if (is_dir($file->relativePath)) {
-		$file->isFolder = true;
-		$file->extension = null;
-	} else {
-		$file->extension = extractExtention($sf);
-		$file->isFolder = false;
-	}
-	array_push($fileModels, $file);
-
-
+foreach ($scannedFiles as $file) {
 	if (isExcluded($file)) {
 		continue;
 	}
 
-	$newEntry = new FileResponse();
+	$newEntry = new File();
 
 	if ($file->isFolder) {
 		$newEntry->type = "folder";
@@ -158,7 +161,7 @@ foreach ($scannedFiles as $sf) {
 		$newEntry->name = $file->name;
 		$newEntry->url = $file->relativePath;
 	}
-	array_push($response->data, $newEntry);
+	array_push($files, $newEntry);
 }
 
 // need to remove the leading . and .. and /
@@ -166,11 +169,11 @@ $finalIndex = 0;
 while ($requestedFolder[$finalIndex] === "." || $requestedFolder[$finalIndex] === "/") {
 	$finalIndex++;
 }
-$response->folder = substr($requestedFolder, $finalIndex);
+$folder = substr($requestedFolder, $finalIndex);
 
-if ($debug_enabled) {
-	$response->debug = array_merge($response->debug, array('scanned_files' => $scannedFiles), array('file_objects' => $fileModels));
-}
+$response->data = array_merge(array('folder' => $folder), array('files' => $files));
+$response->status = "success";
+$response->debug = array_merge($response->debug, array('file_objects' => $scannedFiles));
 
 echo_response();
 

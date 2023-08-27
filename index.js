@@ -307,8 +307,8 @@ const renderContent = (data) => {
 
 const addDialogListeners = (cb) => {
 	console.debug("adding dialog listeners");
-	const addBtn = dialogTitleBar.querySelector("#title-bar-button-add");
-	const xButton = dialogTitleBar.querySelector("#title-bar-button-cancel");
+	const addBtn = dialogRoot.querySelector("#title-bar-button-add");
+	const xButton = dialogRoot.querySelector("#title-bar-button-cancel");
 	const okButton = dialogRoot.querySelector("#btn-ok");
 	const cancelButton = dialogRoot.querySelector("#btn-cancel");
 	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
@@ -333,6 +333,8 @@ const addDialogListeners = (cb) => {
 
 	okButton.onclick = () => {
 		console.debug(selectedElement);
+		if (selectedElement === null)
+			return;
 		if (selectedElement.data.type === "folder") {
 			navigateToFolder(selectedElement)
 		} else {
@@ -370,9 +372,9 @@ const renderDialog = () => {
 	console.info(`loading ${path}`);
 	dialogFileList.innerHTML = loaderHTML;
 	fetchDocs(path)
-		.then(data => {
-			updateFolderPath(data.folder);
-			renderDialogContent(data.data);
+		.then(response => {
+			updateFolderPath(response.data.folder);
+			renderDialogContent(response.data.files);
 
 			// we need to select the previously selected file and scroll the element into view
 			if (fileToSelect !== "") {
