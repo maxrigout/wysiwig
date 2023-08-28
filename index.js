@@ -227,8 +227,8 @@ const selectElement = (e, i) => {
 	} else if (i >= 0 && i < fetchedData.length) {
 		selectedElement.data = fetchedData[i];
 	}
-	delButton.disabled = selectedElement.data.type === "parentFolder" || selectedElement.data.type === "folder";
-	okButton.disabled = selectedElement.data.type === "parentFolder" || selectedElement.data.type === "folder";
+	delButton.disabled = selectedElement.data.type === "parentFolder";
+	okButton.disabled = selectedElement.data.type === "parentFolder";
 	selectedElement.node.classList.add(fileSelectedClass);
 	updatePreview();
 }
@@ -378,7 +378,7 @@ const addDialogListeners = (cb) => {
 	delButton.onclick = () => {
 		if (selectedElement === null)
 			return;
-		if (selectedElement.data.type === "parentFolder" || selectedElement.data.type === "folder") {
+		if (selectedElement.data.type === "parentFolder") {
 			return;
 		}
 		confirmDeleteDialog.showModal();
