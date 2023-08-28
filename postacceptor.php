@@ -8,6 +8,7 @@
 		public array | null $debug;
 		public string $error;
 		public string $status;
+		public string $errorCode;
 	}
 
 	require_once "params.php";
@@ -53,18 +54,24 @@
 
 		// Sanitize input
 		if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
-				header("HTTP/1.1 400 Invalid file name.");
-				$response->status = "error";
-				$response->error = "invalid file name!";
-				echo_response();
-				return;
+			$debugMessage = "invalid file name! " . $temp['name'];
+			$response->status = "error";
+			$response->error = "cannot upload the file.";
+			$response->errorCode = "PA-01";
+			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			header("HTTP/1.1 400 Bad Request");
+			echo_response();
+			return;
 		}
 
 		// Verify extension
 		if (!in_array(strtolower(pathinfo($temp['name'], PATHINFO_EXTENSION)), $allAcceptedFileExtensions)) {
-			header("HTTP/1.1 400 Invalid extension.");
+			$debugMessage = "extension needs to be one of the following: " . implode(", ", $allAcceptedFileExtensions);
 			$response->status = "error";
-			$response->error = "extension needs to be one of the following: " . implode(", ", $allAcceptedFileExtensions);
+			$response->error = "cannot upload the file.";
+			$response->errorCode = "PA-02";
+			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			header("HTTP/1.1 400 Bad Request");
 			echo_response();
 			return;
 		}
@@ -79,11 +86,25 @@
 		$absoluteFilePath = realpath($filetowrite);
 		$response->debug = array_merge($response->debug, array('fileWritten' => $absoluteFilePath));
 
-		// TODO: verify the file doesn't already exist
-		if (!move_uploaded_file($temp['tmp_name'], $filetowrite)) {
-			header("HTTP/1.1 500 Server Error");
+		// verify the file doesn't already exist
+		if (file_exists($filetowrite)) {
+			$debugMessage = "file already exists." . $filetowrite;
 			$response->status = "error";
-			$response->error = "unable to move the file... Attempted to write the file to:" . $absoluteFilePath;
+			$response->error = "cannot upload the file.";
+			$response->errorCode = "PA-03";
+			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			header("HTTP/1.1 500 Server Error");
+			echo_response();
+			return;
+		}
+
+		if (!move_uploaded_file($temp['tmp_name'], $filetowrite)) {
+			$debugMessage = "unable to move the file... Attempted to write the file to:" . $absoluteFilePath;
+			$response->status = "error";
+			$response->error = "cannot upload the file.";
+			$response->errorCode = "PA-04";
+			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			header("HTTP/1.1 500 Server Error");
 		} else {
 			$response->status = "success";
 		}
@@ -91,9 +112,12 @@
 
 	} else {
 		// Notify editor that the upload failed
-		header("HTTP/1.1 500 Server Error");
+		$debugMessage = "the upload has failed!";
 		$response->status = "error";
-		$response->error = "the upload has failed!";
+		$response->error = "cannot upload the file.";
+		$response->errorCode = "PA-05";
+		$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+		header("HTTP/1.1 500 Server Error");
 		echo_response();
 	}
 ?>

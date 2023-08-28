@@ -5,6 +5,7 @@
 class Response {
 	public array | null $debug;
 	public string $error;
+	public string $errorCode;
 	public string $status;
 	public array $data = array();
 }
@@ -136,9 +137,12 @@ $filesType = $_POST["type"];
 $scannedFiles = scanDirectory($requestedFolder);
 
 if ($scannedFiles === null) {
-	header("HTTP/1.1 500 Internal Server Error");
+	$debugMessage = "unable to scan directory: " . $requestedFolder;
 	$response->status = "error";
-	$response->error = "unable to scan dirrectory: " . $requestedFolder;
+	$response->error = "unable to get the files!";
+	$response->errorCode = "GL-01";
+	$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+	header("HTTP/1.1 500 Internal Server Error");
 	echo_response();
 	return;
 }

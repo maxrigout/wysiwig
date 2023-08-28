@@ -15,6 +15,8 @@ const dialogTitleBarPath = dialog.querySelector(".title-bar-path");
 const dialogFileList = dialog.querySelector(".dialog-file-list");
 const dialogFilePreview = dialog.querySelector(".dialog-file-preview");
 
+const confirmDeleteDialog = document.querySelector("#comfirmDeleteDialog");
+
 // the path we've navigated to
 let pathList = [];
 // the current selected element
@@ -139,6 +141,32 @@ const uploadHandler = (file, metadata, progress) => new Promise((resolve, reject
 	xhr.send(formData);
 });
 
+// used to perform file operations
+const fileActionHandler = async (folder, fileName, action, payload) => {
+	console.debug(folder, fileName, action, payload);
+	const myHeaders = new Headers();
+
+	const formData = new FormData();
+	formData.set("u", folder);
+	formData.set("f", fileName);
+	formData.set("a", action);
+	if (payload !== null || payload !== undefined)
+		formData.set("p", payload);
+
+	const myRequest = new Request(fileActionUrl, {
+		method: "POST",
+		headers: myHeaders,
+		body: formData,
+	});
+
+	const response = await fetch(myRequest);
+	if (response.status != 200) {
+		throw "expected status code to be 200!";
+	}
+	const jsonData = await response.json();
+	return jsonData;
+}
+
 // https://stackoverflow.com/questions/9068156/server-side-file-browsing
 const fileBrowser = (cb) => {
 	const acceptedFileExtensions = acceptedExtensions[insertType].map(e => "." + e).join(",");
@@ -180,6 +208,8 @@ const updateFolderPath = (path) => {
 }
 
 const selectElement = (e, i) => {
+	const delButton = dialogRoot.querySelector("#title-bar-button-sup");
+	const okButton = dialogRoot.querySelector("#btn-ok");
 	if (selectedElement !== null) {
 		if (selectedElement.index === i) {
 			console.debug(`element already selected`);
@@ -197,6 +227,8 @@ const selectElement = (e, i) => {
 	} else if (i >= 0 && i < fetchedData.length) {
 		selectedElement.data = fetchedData[i];
 	}
+	delButton.disabled = selectedElement.data.type === "parentFolder" || selectedElement.data.type === "folder";
+	okButton.disabled = selectedElement.data.type === "parentFolder" || selectedElement.data.type === "folder";
 	selectedElement.node.classList.add(fileSelectedClass);
 	updatePreview();
 }
@@ -216,9 +248,17 @@ const scrollSelectedElementIntoView = () => {
 	selectedElement.node.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
 }
 
+const deselectElement = () => {
+	selectedElement = null;
+	const delButton = dialogRoot.querySelector("#title-bar-button-sup");
+	const okButton = dialogRoot.querySelector("#btn-ok");
+	delButton.disabled = true;
+	okButton.disabled = true;
+}
+
 const navigateToFolder = (folder) => {
 	console.info(`navigating to folder`, folder);
-	selectedElement = null;
+	deselectElement();
 	dialogFileList.innerHTML = "";
 	pathList.push(folder.data.name);
 	renderDialog();
@@ -226,7 +266,7 @@ const navigateToFolder = (folder) => {
 
 const navigateUp = () => {
 	console.info("navigating up");
-	selectedElement = null;
+	deselectElement();
 	dialogFileList.innerHTML = "";
 	pathList.pop();
 	renderDialog();
@@ -253,6 +293,10 @@ const getFileNameAndIcon = (file, index) => {
 			break;
 		case "musescore":
 			iconPath = musescoreIconPath;
+			break;
+		case "mp4":
+		case "m4v":
+			iconPath = videoIconPath;
 			break;
 		default:
 	}
@@ -309,6 +353,7 @@ const addDialogListeners = (cb) => {
 	console.debug("adding dialog listeners");
 	const addBtn = dialogRoot.querySelector("#title-bar-button-add");
 	const xButton = dialogRoot.querySelector("#title-bar-button-cancel");
+	const delButton = dialogRoot.querySelector("#title-bar-button-sup");
 	const okButton = dialogRoot.querySelector("#btn-ok");
 	const cancelButton = dialogRoot.querySelector("#btn-cancel");
 	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
@@ -330,6 +375,42 @@ const addDialogListeners = (cb) => {
 	};
 	xButton.onclick = closeDialog;
 	cancelButton.onclick = closeDialog;
+	delButton.onclick = () => {
+		if (selectedElement === null)
+			return;
+		if (selectedElement.data.type === "parentFolder" || selectedElement.data.type === "folder") {
+			return;
+		}
+		confirmDeleteDialog.showModal();
+		// populate the text with the message from the config and the selected item
+		confirmDeleteDialog.querySelector("#delete-file-message").innerHTML = deleteFileConfirmationMessage;
+		confirmDeleteDialog.querySelector("#delete-file-name").innerHTML = selectedElement.data.name;
+		// add listeners for the "oui" "non" buttons
+		const ouiBtn = confirmDeleteDialog.querySelector("#btn-delete-oui");
+		const nonBtn = confirmDeleteDialog.querySelector("#btn-delete-non");
+
+		ouiBtn.onclick = () => {
+			console.log("oui");
+			// call the delete api
+			fileActionHandler(getPath(), selectedElement.data.name, "delete")
+				.then(response => {
+					deselectElement();
+					renderDialog();
+				})
+				.catch(error => {
+					console.error(error);
+					renderDialog();
+				})
+			// close the modal
+			confirmDeleteDialog.close();
+		}
+
+		nonBtn.onclick = () => {
+			console.log("non")
+			// close the modal
+			confirmDeleteDialog.close();
+		}
+	}
 
 	okButton.onclick = () => {
 		console.debug(selectedElement);

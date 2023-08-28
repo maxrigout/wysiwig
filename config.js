@@ -1,5 +1,5 @@
-// v0.0.3
-// 05/07/2023
+// v0.0.4
+// 08/27/2023
 
 const fileListClass = "file-list";
 const fileSelectedClass = "file-selected";
@@ -17,12 +17,13 @@ const imageIconPath = "icons/image_icon.png";
 const audioIconPath = "icons/audio_icon.png";
 const pdfIconPath = "icons/pdf_icon.png";
 const musescoreIconPath = "icons/musescore_icon.png";
+const videoIconPath = "";
 const defaultFileIconPath = "icons/file_icon.png";
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
-const acceptedImageFileExtensions = ["gif", "jpg", "png"];
-const acceptedMediaFileExtensions = ["mp4"];
-const acceptedLinkFileExtensions = ["pdf", "mscz", "midi", "mdi"];
+const acceptedImageFileExtensions = ["gif", "jpg", "jpeg" , "png", "bmp"];
+const acceptedMediaFileExtensions = ["mp4", "m4v"];
+const acceptedLinkFileExtensions = ["pdf", "mscz", "midi", "mdi", "mp3"];
 
 // the host identifying your site without the http or https
 const host = "localhost:3000"
@@ -30,10 +31,16 @@ const host = "localhost:3000"
 // don't include the http or https to truncate both
 const basePath = "media";
 
+// message displayed when attempting to delete a file
+const deleteFileConfirmationMessage = "Etes-vous sur de vouloir supprimer ce fichier ?";
+const newFolderMessage = "Nom du nouveau dossier";
+
 // url used to fetch the server content
 const retrieveListUrl = "getliste.php";
 // url used to upload files
 const uploadFileUrl = "postacceptor.php"
+// url used to delete files
+const fileActionUrl = "actionsfichier.php"
 
 // not used
 const externalPluginBaseUrl = "../";

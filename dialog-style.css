@@ -41,6 +41,11 @@ dialog {
 	margin-bottom: 10px;
 }
 
+.dialog-action-buttons {
+	display: flex;
+	flex-direction: row;
+}
+
 .dialog-content {
 	display: flex;
 	flex-direction: row;
@@ -79,4 +84,13 @@ dialog {
 
 .align-right {
 	margin-left: auto;
+}
+
+#myDialog button {
+	margin-right: 5px;
+	text-align: center;
+}
+
+#myDialog .last-button {
+	margin-right: 0px;
 }
