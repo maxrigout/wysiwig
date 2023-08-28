@@ -48,6 +48,19 @@ const externalPluginBaseUrl = "../";
 // html for the loader
 const loaderHTML = `<div class="lds-ring"><div></div><div></div><div></div><div></div></div>`;
 
+// messages to display when a specific error code is returned
+const errorCodes = {
+	"GL-01": "Impossible de récupérer le liste des fichier! (erreur serveur)",
+	"PA-01": "Nom du fichier invalide!",
+	"PA-02": "Extension non supportée!",
+	"PA-03": "Le fichier existe déjà!",
+	"PA-04": "Erreur serveur.",
+	"PA-05": "L'upload a échoué.",
+	"AF-D-01": "Impossible de supprimer ce fichier!",
+	"AF-N-01": "Impossible de créer le dossier! (erreur serveur)",
+	"AF-N-02": "Le dossier existe déjà!"
+}
+
 const fetchDocs = async (path) => {
 	return await fetchDocs_server(path);
 	// return await fetchDocs_hardCoded(path);

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
 	class Response {
 		public array | null $debug;
 		public string $error;
@@ -38,17 +39,18 @@
 	}
 	
 	$folder = $_POST["u"];
-	$fileName = $_POST["f"];
 	$action = $_POST["a"];
 	$payload = json_decode($_POST["p"]);
 
 	if ($action === "delete") {
+		$fileName = $payload->f;
 		$from = $baseFolder . $folder . "/" . $fileName;
-		$trashFolder = "del/" . $folder;
+		$trashFolder = $baseTrashFolder . $folder;
 
 		if (!is_dir($trashFolder)) {
 			mkdir($trashFolder, 0777, true);
 		}
+		// TODO: maybe prepend the date the file/folder was deleted...
 		$to = $trashFolder . "/" . $fileName;
 		if (!rename($from, $to)) {
 			$debugMessage = "unable to move the file from: " . $from . " to " . $to;
@@ -57,40 +59,39 @@
 			$response->errorCode = "AF-D-01";
 			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
 			header("HTTP/1.1 500 Internal Server Error");
-			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode($response);
+			return;
 		}
 		$response->status = "success";
-		header("HTTP/1.1 200 Ok");
-		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($response);
 	}
 
 	if ($action === "new-folder") {
-		$folderToCreate = $baseFolder . $folder . "/" . $payload["folder"];
-		if (!is_dir($folderToCreate)) {
-			if (!mkdir($folderToCreate, 0777, true)) {
-				$debugMessage = "unable to create the directory: " . $folderToCreate;
-				$response->error = "unable to create the folder";
-				$response->status = "error";
-				$response->errorCode = "AF-N-01";
-				$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
-				header("HTTP/1.1 500 Internal Server Error");
-				header('Content-Type: application/json; charset=utf-8');
-				echo json_encode($response);
-			}
-			$response->status = "success";
-			header("HTTP/1.1 200 Ok");
+		$folderName = $payload->f;
+		$folderToCreate = $baseFolder . $folder . "/" . $folderName;
+		if (is_dir($folderToCreate)) {
+			$debugMessage = "directory " . $folderToCreate . " already exists!";
+			$response->error = "unable to create the folder";
+			$response->status = "error";
+			$response->errorCode = "AF-N-02";
+			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			header("HTTP/1.1 500 Internal Server Error");
 			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode($response);
+			return;
 		}
-		$debugMessage = "directory " . $folderToCreate . " already exists!";
-		$response->error = "unable to create the folder";
-		$response->status = "error";
-		$response->errorCode = "AF-N-02";
-		$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
-		header("HTTP/1.1 500 Internal Server Error");
-		header('Content-Type: application/json; charset=utf-8');
+		if (!mkdir($folderToCreate, 0777, true)) {
+			$debugMessage = "unable to create the directory: " . $folderToCreate;
+			$response->error = "unable to create the folder";
+			$response->status = "error";
+			$response->errorCode = "AF-N-01";
+			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			header("HTTP/1.1 500 Internal Server Error");
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode($response);
+			return;
+		}
+		$response->status = "success";
 		echo json_encode($response);
 	}
 ?>

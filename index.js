@@ -15,7 +15,9 @@ const dialogTitleBarPath = dialog.querySelector(".title-bar-path");
 const dialogFileList = dialog.querySelector(".dialog-file-list");
 const dialogFilePreview = dialog.querySelector(".dialog-file-preview");
 
+const errorMessageDialog = document.querySelector("#errorMessageDialog");
 const confirmDeleteDialog = document.querySelector("#comfirmDeleteDialog");
+const newFolderDialog = document.querySelector("#newFolderDialog");
 
 // the path we've navigated to
 let pathList = [];
@@ -142,16 +144,15 @@ const uploadHandler = (file, metadata, progress) => new Promise((resolve, reject
 });
 
 // used to perform file operations
-const fileActionHandler = async (folder, fileName, action, payload) => {
-	console.debug(folder, fileName, action, payload);
+const fileActionHandler = async (folder, action, payload) => {
+	console.debug(folder, action, payload);
 	const myHeaders = new Headers();
 
 	const formData = new FormData();
 	formData.set("u", folder);
-	formData.set("f", fileName);
 	formData.set("a", action);
 	if (payload !== null || payload !== undefined)
-		formData.set("p", payload);
+		formData.set("p", JSON.stringify(payload));
 
 	const myRequest = new Request(fileActionUrl, {
 		method: "POST",
@@ -160,10 +161,10 @@ const fileActionHandler = async (folder, fileName, action, payload) => {
 	});
 
 	const response = await fetch(myRequest);
-	if (response.status != 200) {
-		throw "expected status code to be 200!";
-	}
 	const jsonData = await response.json();
+	if (response.status != 200) {
+		throw jsonData;
+	}
 	return jsonData;
 }
 
@@ -182,6 +183,14 @@ const fileBrowser = (cb) => {
 	});
 
 	input.click();
+}
+
+const showErrorDialog = (errorCode, errorMessage) => {
+	const msg = errorMessageDialog.querySelector("#error-message");
+	const code = errorMessageDialog.querySelector("#error-code");
+	code.innerHTML = errorCode;
+	msg.innerHTML = errorMessage;
+	errorMessageDialog.showModal();
 }
 
 const updatePreview = () => {
@@ -353,6 +362,7 @@ const addDialogListeners = (cb) => {
 	console.debug("adding dialog listeners");
 	const addBtn = dialogRoot.querySelector("#title-bar-button-add");
 	const xButton = dialogRoot.querySelector("#title-bar-button-cancel");
+	const nfButton = dialogRoot.querySelector("#title-bar-button-new-folder");
 	const delButton = dialogRoot.querySelector("#title-bar-button-sup");
 	const okButton = dialogRoot.querySelector("#btn-ok");
 	const cancelButton = dialogRoot.querySelector("#btn-cancel");
@@ -375,13 +385,14 @@ const addDialogListeners = (cb) => {
 	};
 	xButton.onclick = closeDialog;
 	cancelButton.onclick = closeDialog;
+	
 	delButton.onclick = () => {
 		if (selectedElement === null)
 			return;
 		if (selectedElement.data.type === "parentFolder") {
 			return;
 		}
-		confirmDeleteDialog.showModal();
+
 		// populate the text with the message from the config and the selected item
 		confirmDeleteDialog.querySelector("#delete-file-message").innerHTML = deleteFileConfirmationMessage;
 		confirmDeleteDialog.querySelector("#delete-file-name").innerHTML = selectedElement.data.name;
@@ -392,13 +403,14 @@ const addDialogListeners = (cb) => {
 		ouiBtn.onclick = () => {
 			console.log("oui");
 			// call the delete api
-			fileActionHandler(getPath(), selectedElement.data.name, "delete")
+			fileActionHandler(getPath(), "delete", {f: selectedElement.data.name})
 				.then(response => {
 					deselectElement();
 					renderDialog();
 				})
 				.catch(error => {
 					console.error(error);
+					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
 					renderDialog();
 				})
 			// close the modal
@@ -410,6 +422,38 @@ const addDialogListeners = (cb) => {
 			// close the modal
 			confirmDeleteDialog.close();
 		}
+
+		confirmDeleteDialog.showModal();
+	}
+
+	nfButton.onclick = () => {
+		const msg = newFolderDialog.querySelector("#new-folder-message");
+		const name = newFolderDialog.querySelector("#new-folder-name");
+		const submit = newFolderDialog.querySelector("#new-folder-submit");
+		const cancel = newFolderDialog.querySelector("#new-folder-cancel");
+
+		msg.innerHTML = newFolderMessage;
+
+		submit.onclick = () => {
+			console.log(name.value);
+			fileActionHandler(getPath(), "new-folder", {f: name.value})
+				.then(response => {
+					deselectElement();
+					renderDialog();
+				})
+				.catch(error => {
+					console.error(error);
+					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
+					renderDialog();
+				})
+			newFolderDialog.close();
+		}
+
+		cancel.onclick = () => {
+			newFolderDialog.close();
+		}
+
+		newFolderDialog.showModal();
 	}
 
 	okButton.onclick = () => {

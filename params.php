@@ -26,4 +26,9 @@ $debug_enabled = true;
 * Change this line to set the upload folder *
 *********************************************/
 $baseFolder = "media/";
+
+/*********************************************
+* Change this line to set the trash folder *
+*********************************************/
+$baseTrashFolder = "media-del/";
 ?>
