@@ -9,6 +9,18 @@ error_reporting(E_ERROR | E_PARSE);
 
 	require_once "params.php";
 
+	function is_dir_empty($dir) {
+		$handle = opendir($dir);
+		while (($entry = readdir($handle)) !== false) {
+			if ($entry != "." && $entry != "..") {
+				closedir($handle);
+				return false;
+			}
+		}
+		closedir($handle);
+		return true;
+	}
+
 	function echo_response() {
 		global $debug_enabled, $response;
 		header('Content-Type: application/json; charset=utf-8');
@@ -50,8 +62,21 @@ error_reporting(E_ERROR | E_PARSE);
 		if (!is_dir($trashFolder)) {
 			mkdir($trashFolder, 0777, true);
 		}
-		// TODO: maybe prepend the date the file/folder was deleted...
-		$to = $trashFolder . "/" . $fileName;
+		$time = date("Y-m-d_H-i-s_");
+		$to = $trashFolder . "/" . $time . $fileName;
+
+		if (is_dir($from) && !is_dir_empty($from))
+		{
+			$debugMessage = "directory: " . $from . " is not empty! ";
+			$response->error = "unable to delete file";
+			$response->status = "error";
+			$response->errorCode = "AF-D-02";
+			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			header("HTTP/1.1 500 Internal Server Error");
+			echo json_encode($response);
+			return;
+		}
+
 		if (!rename($from, $to)) {
 			$debugMessage = "unable to move the file from: " . $from . " to " . $to;
 			$response->error = "unable to delete file";

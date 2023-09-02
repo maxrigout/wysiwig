@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>JavaScript on your page</title>
 		<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous"> -->
-		<link href="dialog-style.css" type="text/css" rel="stylesheet">
+		<link href="server-explorer-style.css" type="text/css" rel="stylesheet">
 		<link href="loader.css" type="text/css" rel="stylesheet">
 	</head>
 	<body>
@@ -54,8 +54,10 @@
 		<dialog id="comfirmDeleteDialog">
 			<div id="delete-file-message"></div>
 			<div id="delete-file-name"></div>
-			<button id="btn-delete-oui">Oui</button>
-			<button id="btn-delete-non">Non</button>
+			<form method="dialog">
+				<button id="btn-delete-oui">Oui</button>
+				<button id="btn-delete-non">Non</button>
+			</form>
 		</dialog>
 
 		<dialog id="newFolderDialog">
@@ -64,8 +66,10 @@
 				<input id="new-folder-name" type="text">
 			</div>
 			<div>
-			<button id="new-folder-submit">Valider</button>
-			<button id="new-folder-cancel">Annuler</button>
+				<form method="dialog">
+					<button id="new-folder-submit">Valider</button>
+					<button id="new-folder-cancel">Annuler</button>
+				</form>
 			</div>
 		</dialog>
 		  
@@ -119,7 +123,7 @@
 		<!-- <script type="text/javascript" src='https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js' referrerpolicy="origin"></script> -->
 		<script src="tinymce_dev/tinymce.js"></script>
 		<script src="hardCodedFiles.js"></script>
-		<script src="config.js"></script>
-		<script src="index.js"></script>
+		<script src="server-explorer-config.js"></script>
+		<script src="server-explorer.js"></script>
 	</body>
 </html>

@@ -1,6 +1,6 @@
 <?php
 /***************************************************
- * Only these origins are allowed to upload images *
+ * Only these origins are allowed to upload files *
 ***************************************************/
 $accepted_origins = array("http://localhost:3000", "http://127.0.0.1:3000", "http://0.0.0.0:3000");
 

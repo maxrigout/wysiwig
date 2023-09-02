@@ -57,6 +57,7 @@ const errorCodes = {
 	"PA-04": "Erreur serveur.",
 	"PA-05": "L'upload a échoué.",
 	"AF-D-01": "Impossible de supprimer ce fichier!",
+	"AF-D-02": "Impossible de supprimer un dossier non vide!",
 	"AF-N-01": "Impossible de créer le dossier! (erreur serveur)",
 	"AF-N-02": "Le dossier existe déjà!"
 }

@@ -361,7 +361,7 @@ const renderContent = (data) => {
 const addDialogListeners = (cb) => {
 	console.debug("adding dialog listeners");
 	const addBtn = dialogRoot.querySelector("#title-bar-button-add");
-	const xButton = dialogRoot.querySelector("#title-bar-button-cancel");
+	const closeBtn = dialogRoot.querySelector("#title-bar-button-cancel");
 	const nfButton = dialogRoot.querySelector("#title-bar-button-new-folder");
 	const delButton = dialogRoot.querySelector("#title-bar-button-sup");
 	const okButton = dialogRoot.querySelector("#btn-ok");
@@ -383,7 +383,7 @@ const addDialogListeners = (cb) => {
 				});
 		});
 	};
-	xButton.onclick = closeDialog;
+	closeBtn.onclick = closeDialog;
 	cancelButton.onclick = closeDialog;
 	
 	delButton.onclick = () => {
@@ -398,7 +398,6 @@ const addDialogListeners = (cb) => {
 		confirmDeleteDialog.querySelector("#delete-file-name").innerHTML = selectedElement.data.name;
 		// add listeners for the "oui" "non" buttons
 		const ouiBtn = confirmDeleteDialog.querySelector("#btn-delete-oui");
-		const nonBtn = confirmDeleteDialog.querySelector("#btn-delete-non");
 
 		ouiBtn.onclick = () => {
 			console.log("oui");
@@ -413,14 +412,6 @@ const addDialogListeners = (cb) => {
 					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
 					renderDialog();
 				})
-			// close the modal
-			confirmDeleteDialog.close();
-		}
-
-		nonBtn.onclick = () => {
-			console.log("non")
-			// close the modal
-			confirmDeleteDialog.close();
 		}
 
 		confirmDeleteDialog.showModal();
@@ -430,7 +421,6 @@ const addDialogListeners = (cb) => {
 		const msg = newFolderDialog.querySelector("#new-folder-message");
 		const name = newFolderDialog.querySelector("#new-folder-name");
 		const submit = newFolderDialog.querySelector("#new-folder-submit");
-		const cancel = newFolderDialog.querySelector("#new-folder-cancel");
 
 		msg.innerHTML = newFolderMessage;
 
@@ -446,13 +436,7 @@ const addDialogListeners = (cb) => {
 					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
 					renderDialog();
 				})
-			newFolderDialog.close();
 		}
-
-		cancel.onclick = () => {
-			newFolderDialog.close();
-		}
-
 		newFolderDialog.showModal();
 	}
 
