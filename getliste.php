@@ -1,5 +1,9 @@
 <?php
 
+/*
+	v0.0.5
+*/
+
 // error_reporting(E_ERROR | E_PARSE);
 
 class Response {

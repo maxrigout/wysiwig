@@ -1,5 +1,9 @@
 <?php
 
+/*
+	v0.0.5
+*/
+
 // https://www.tiny.cloud/docs/advanced/php-upload-handler/#examplepostacceptorphp
 
 // error_reporting(E_ERROR | E_PARSE);

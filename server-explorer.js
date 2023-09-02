@@ -1,5 +1,12 @@
-// v0.0.3
-// 05/07/2023
+/* 
+	v0.0.5
+
+	02/09/2023
+	* added file operations
+	-	* delete file/folder
+	-	* new folder
+	* added error dialog
+*/
 
 // lien:
 // 		pdf, mscz, midi, mdi
@@ -8,7 +15,7 @@
 // media
 //		
 
-const dialog = document.querySelector("#myDialog");
+const dialog = document.querySelector("#explorerDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
 const dialogTitleBar = dialog.querySelector(".dialog-title-bar");
 const dialogTitleBarPath = dialog.querySelector(".title-bar-path");
@@ -29,7 +36,8 @@ let fileToSelect = "";
 let fetchedData;
 // insert type determined by which button was clicked
 // either "insert link", "insert image" or "insert media"
-let insertType;
+let previousInsertType = "";
+let insertType = "";
 // 'insert type' map to file extensions
 const acceptedExtensions = {
 	file: acceptedLinkFileExtensions,
@@ -270,7 +278,7 @@ const navigateToFolder = (folder) => {
 	deselectElement();
 	dialogFileList.innerHTML = "";
 	pathList.push(folder.data.name);
-	renderDialog();
+	renderExplorerDialog();
 }
 
 const navigateUp = () => {
@@ -278,7 +286,7 @@ const navigateUp = () => {
 	deselectElement();
 	dialogFileList.innerHTML = "";
 	pathList.pop();
-	renderDialog();
+	renderExplorerDialog();
 }
 
 // https://www.w3schools.com/howto/howto_css_image_gallery.asp
@@ -375,7 +383,7 @@ const addDialogListeners = (cb) => {
 					console.info("upload successful!");
 					console.debug(result);
 					fileToSelect = metadata.fileName;
-					renderDialog();
+					renderExplorerDialog();
 				})
 				.catch(error => {
 					console.info("an error occurred while uploading the file")
@@ -400,17 +408,16 @@ const addDialogListeners = (cb) => {
 		const ouiBtn = confirmDeleteDialog.querySelector("#btn-delete-oui");
 
 		ouiBtn.onclick = () => {
-			console.log("oui");
 			// call the delete api
 			fileActionHandler(getPath(), "delete", {f: selectedElement.data.name})
 				.then(response => {
+					confirmDeleteDialog.close();
 					deselectElement();
-					renderDialog();
+					renderExplorerDialog();
 				})
 				.catch(error => {
 					console.error(error);
 					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
-					renderDialog();
 				})
 		}
 
@@ -421,6 +428,7 @@ const addDialogListeners = (cb) => {
 		const msg = newFolderDialog.querySelector("#new-folder-message");
 		const name = newFolderDialog.querySelector("#new-folder-name");
 		const submit = newFolderDialog.querySelector("#new-folder-submit");
+		const cancel = newFolderDialog.querySelector("#new-folder-cancel");
 
 		msg.innerHTML = newFolderMessage;
 
@@ -428,15 +436,22 @@ const addDialogListeners = (cb) => {
 			console.log(name.value);
 			fileActionHandler(getPath(), "new-folder", {f: name.value})
 				.then(response => {
+					name.value = "";
+					newFolderDialog.close();
 					deselectElement();
-					renderDialog();
+					renderExplorerDialog();
 				})
 				.catch(error => {
 					console.error(error);
+					name.value = "";
 					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
-					renderDialog();
 				})
 		}
+
+		cancel.onclick = () => {
+			newFolderDialog.close();
+		}
+
 		newFolderDialog.showModal();
 	}
 
@@ -463,7 +478,7 @@ const addDialogListeners = (cb) => {
 	};
 }
 
-const renderDialogContent = (data) => {
+const renderExplorerDialogContent = (data) => {
 	console.debug(data);
 	fetchedData = data;
 	// TODO: potentially sort the data
@@ -476,14 +491,14 @@ const renderDialogContent = (data) => {
 	updatePreview();
 }
 
-const renderDialog = () => {
+const renderExplorerDialog = () => {
 	const path = getPath();
 	console.info(`loading ${path}`);
 	dialogFileList.innerHTML = loaderHTML;
 	fetchDocs(path)
 		.then(response => {
 			updateFolderPath(response.data.folder);
-			renderDialogContent(response.data.files);
+			renderExplorerDialogContent(response.data.files);
 
 			// we need to select the previously selected file and scroll the element into view
 			if (fileToSelect !== "") {
@@ -501,18 +516,14 @@ const renderDialog = () => {
 			// we still want to render a folder to give the user the ability
 			// to go up in the directory tree.
 			pathList = [];
-			renderDialogContent([]);
+			renderExplorerDialogContent([]);
 			// since an error occured, we don't want to select the file
 			fileToSelect = "";
 		});
 }
 
-const filePickerDialogHandler = () => {
-	dialog.showModal();
-	renderDialog();
-}
-
 const setInsertType = (type) => {
+	previousInsertType = insertType;
 	insertType = type;
 }
 
@@ -575,8 +586,16 @@ const filePickerHandler = (cb, value, meta) => {
 		extractFileInfo(value);
 	}
 	setInsertType(meta.filetype);
+
+	// we need to invalidate the selectedElement because we won't be getting the same results from the server
+	if (previousInsertType !== insertType) {
+		selectedElement = null;
+	}
+
 	addDialogListeners(cb);
-	filePickerDialogHandler();
+
+	dialog.showModal();
+	renderExplorerDialog();
 };
 
 tinymce.init({

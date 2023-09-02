@@ -1,5 +1,9 @@
-// v0.0.4
-// 08/27/2023
+/*
+	v0.0.5
+
+	02/09/2023
+	* added error messages
+*/
 
 const fileListClass = "file-list";
 const fileSelectedClass = "file-selected";
@@ -59,7 +63,8 @@ const errorCodes = {
 	"AF-D-01": "Impossible de supprimer ce fichier!",
 	"AF-D-02": "Impossible de supprimer un dossier non vide!",
 	"AF-N-01": "Impossible de créer le dossier! (erreur serveur)",
-	"AF-N-02": "Le dossier existe déjà!"
+	"AF-N-02": "Le dossier existe déjà!",
+	"AF-N-03": "Nom de dossier invalide!",
 }
 
 const fetchDocs = async (path) => {

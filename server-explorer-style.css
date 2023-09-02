@@ -1,4 +1,13 @@
-#myDialog {
+/*
+	v0.0.5
+	
+	02/09/2023
+	* added styles for the dialogs
+	-	* red button for the delete button and non button
+	-	* styles for the buttons
+*/
+
+#explorerDialog , #comfirmDeleteDialog , #newFolderDialog {
 	border: solid gray 2px;
 	border-radius: 10px;
 }
@@ -16,6 +25,7 @@
 }
 
 .element_container:hover {
+	border-radius: 5px;
 	background-color: rgba(124, 238, 255, 0.349);
 }
 
@@ -24,6 +34,10 @@
 	padding-top: 3px;
 	padding-bottom: 3px;
 	vertical-align: middle;
+	/* prevent selection */
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
 }
 
 .element_container img {
@@ -35,7 +49,6 @@ dialog {
 }
 
 .dialog-title-bar {
-	/* border: 1px solid #000000; */
 	display: flex;
 	flex-direction: row;
 	margin-bottom: 10px;
@@ -57,13 +70,11 @@ dialog {
 
 .dialog-file-list {
 	flex: auto;
-	/* border: 1px solid #000000; */
 	overflow: auto;
 	width: 70%;
 }
 
 .dialog-file-preview {
-	/* border: 1px solid #000000; */
 	border-left: 1px solid #000000;
 	width: 30%;
 }
@@ -86,11 +97,51 @@ dialog {
 	margin-left: auto;
 }
 
-#myDialog button {
+/* #title-bar-button-sup svg {
+	stroke: white;
+} */
+
+dialog button {
 	margin-right: 5px;
 	text-align: center;
+	border: solid;
+	border-width: 1px;
+	border-radius: 5px;
+	border-color: rgb(191, 226, 253);
+	background-color: white;
+	padding: 4px 7px;
 }
 
-#myDialog .last-button {
+dialog button:hover {
+	background-color: rgb(224,238,249);
+}
+
+dialog button:disabled {
+	background-color: white;
+}
+
+button#title-bar-button-sup, #comfirmDeleteDialog button#btn-delete-non {
+	border-color: rgb(255, 191, 191);
+	background-color: rgb(255, 180, 180);
+}
+
+button#title-bar-button-sup:hover, #comfirmDeleteDialog button#btn-delete-non {
+	background-color: rgb(255, 145, 145)
+}
+
+button#title-bar-button-sup:disabled {
+	background-color: rgb(255, 234, 234);
+}
+
+#explorerDialog .last-button {
 	margin-right: 0px;
+}
+
+#errorMessageDialog {
+	border: solid red 5px;
+	border-radius: 10px;
+}
+
+#errorMessageDialog button, #comfirmDeleteDialog button, #newFolderDialog button {
+	margin-top: 10px;
 }

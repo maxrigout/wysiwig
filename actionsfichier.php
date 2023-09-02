@@ -1,5 +1,11 @@
 <?php
-error_reporting(E_ERROR | E_PARSE);
+/*
+	v0.0.5
+
+	* functionality created
+*/
+
+	// error_reporting(E_ERROR | E_PARSE);
 	class Response {
 		public array | null $debug;
 		public string $error;
@@ -73,7 +79,7 @@ error_reporting(E_ERROR | E_PARSE);
 			$response->errorCode = "AF-D-02";
 			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
 			header("HTTP/1.1 500 Internal Server Error");
-			echo json_encode($response);
+			echo_response();
 			return;
 		}
 
@@ -84,15 +90,28 @@ error_reporting(E_ERROR | E_PARSE);
 			$response->errorCode = "AF-D-01";
 			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
 			header("HTTP/1.1 500 Internal Server Error");
-			echo json_encode($response);
+			echo_response();
 			return;
 		}
 		$response->status = "success";
-		echo json_encode($response);
+		echo_response();
 	}
 
-	if ($action === "new-folder") {
+	else if ($action === "new-folder") {
 		$folderName = $payload->f;
+
+		// check if the name contains invalid characters
+		if (strpbrk($folderName, "\\/?%*:|\"<>.;")) {
+			$debugMessage = "not a valid folder name: " . $folderName;
+			$response->error = "unable to create the folder";
+			$response->status = "error";
+			$response->errorCode = "AF-N-03";
+			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			header("HTTP/1.1 500 Internal Server Error");
+			echo_response();
+			return;
+		}
+
 		$folderToCreate = $baseFolder . $folder . "/" . $folderName;
 		if (is_dir($folderToCreate)) {
 			$debugMessage = "directory " . $folderToCreate . " already exists!";
@@ -101,8 +120,7 @@ error_reporting(E_ERROR | E_PARSE);
 			$response->errorCode = "AF-N-02";
 			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
 			header("HTTP/1.1 500 Internal Server Error");
-			header('Content-Type: application/json; charset=utf-8');
-			echo json_encode($response);
+			echo_response();
 			return;
 		}
 		if (!mkdir($folderToCreate, 0777, true)) {
@@ -112,11 +130,10 @@ error_reporting(E_ERROR | E_PARSE);
 			$response->errorCode = "AF-N-01";
 			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
 			header("HTTP/1.1 500 Internal Server Error");
-			header('Content-Type: application/json; charset=utf-8');
-			echo json_encode($response);
+			echo_response();
 			return;
 		}
 		$response->status = "success";
-		echo json_encode($response);
+		echo_response();
 	}
 ?>
