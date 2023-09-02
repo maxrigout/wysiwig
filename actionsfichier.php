@@ -101,7 +101,7 @@
 		$folderName = $payload->f;
 
 		// check if the name contains invalid characters
-		if (strpbrk($folderName, "\\/?%*:|\"<>.;")) {
+		if ($folderName == "" || strpbrk($folderName, "\\/?%*:|\"<>.;")) {
 			$debugMessage = "not a valid folder name: " . $folderName;
 			$response->error = "unable to create the folder";
 			$response->status = "error";
