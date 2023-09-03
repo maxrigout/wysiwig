@@ -38,160 +38,228 @@ let fetchedData;
 // either "insert link", "insert image" or "insert media"
 let previousInsertType = "";
 let insertType = "";
-// 'insert type' map to file extensions
-const acceptedExtensions = {
-	file: acceptedLinkFileExtensions,
-	image: acceptedImageFileExtensions,
-	media: acceptedMediaFileExtensions
-};
 
-const getPath = () => {
-	return pathList.join("/");
-}
-
-function getRandomArbitrary(min, max) {
-	return Math.floor(Math.random() * (max - min) + min);
-}
-
-async function fetchDocs_hardCoded(url) {
-	let data = serverDir[url];
-	const timeout = getRandomArbitrary(100, 1000);
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			console.debug(`took ${timeout} ms`);
-			if (data) {
-				resolve({data: data, folder: url});
-			}
-			else {
-				reject({error: "no data available"});
-			}
-		}, timeout)
-	});
-}
-
-async function fetchDocs_server(path) {
-	const myHeaders = new Headers();
-
-	// for a JSON body...
-	// const body = JSON.stringify({path: path}).toString();
-	// myHeaders.set("Content-Type", "application/json");
-
-	// for a form encoded body...
-	const body = new URLSearchParams();
-	body.append("u", path);
-	body.append("type", insertType); // will either be file, media or image
-
-	const myRequest = new Request(retrieveListUrl, {
-		method: "POST",
-		headers: myHeaders,
-		body: body,
-	});
-
-	const response = await fetch(myRequest);
-	if (response.status != 200) {
-		throw "expected status code to be 200!";
+class Logger {
+	static debug(...data) {
+		console.debug(...data);
 	}
-	const jsonData = await response.json();
-	return jsonData;
-}
-
-// another flavor of 'uploadHandler' that uses the fetch api
-const fetchUploadHandler = async (file, metadata, progress) => {
-	const myHeaders = new Headers();
-
-	const formData = new FormData();
-	formData.append("file", file, metadata.fileName);
-	formData.set("u", getPath());
-
-	const myRequest = new Request(uploadFileUrl, {
-		method: "POST",
-		headers: myHeaders,
-		body: formData,
-	});
-
-	const response = await fetch(myRequest);
-	if (response.status != 200) {
-		throw "expected status code to be 200!";
+	static info(...data) {
+		console.info(...data);
 	}
-	const jsonData = await response.json();
-	return jsonData;
+	static log(...data) {
+		console.log(...data);
+	}
+	static warn(...data) {
+		console.warn(...data);
+	}
+	static error(...data) {
+		console.error(...data);
+	}
 }
 
-// used to upload files to the server
-const uploadHandler = (file, metadata, progress) => new Promise((resolve, reject) => {
-	console.debug("uploading...");
+class FileBrowserService {
+	constructor(client) {
+		this.client = client;
+	}
 
-	const xhr = new XMLHttpRequest();
-	xhr.withCredentials = false;
-	xhr.open('POST', uploadFileUrl);
+	async retrieveFileList(path, fileType) {
+		return this.client.getFileList(path, fileType);
+	}
 
-	xhr.upload.onprogress = (e) => {
-	  progress(e.loaded / e.total * 100);
-	};
-  
-	xhr.onload = () => {
-		const response = JSON.parse(xhr.responseText);
+	async uploadFile(fileName, fileContent, serverLocation, onProgressCb) {
+		return this.client.postUploadFile(fileName, fileContent, serverLocation, onProgressCb);
+	}
 
-		if (xhr.status != 200) {
-			reject({message: 'HTTP Error: ' + xhr.status, remove: true, ...response});
-			return;
+	async deleteFile(folderPath, fileName) {
+		return this.client.postDeleteFile(folderPath, fileName);
+	}
+
+	async createFolder(folderPath, folderName) {
+		return this.client.postCreateFolder(folderPath, folderName);
+	}
+}
+
+class HTTPClient {
+	constructor(getListeUrl, fileUploadUrl, fileOperationUrl) {
+		this.getListeUrl = getListeUrl;
+		this.fileUploadUrl = fileUploadUrl;
+		this.fileOperationUrl = fileOperationUrl;
+	}
+
+	async getFileList(path, fileType) {
+		const myHeaders = new Headers();
+
+		// for a JSON body...
+		// const body = JSON.stringify({path: path}).toString();
+		// myHeaders.set("Content-Type", "application/json");
+	
+		// for a form encoded body...
+		const body = new URLSearchParams();
+		body.append("u", path);
+		body.append("type", fileType); // will either be file, media or image
+	
+		const myRequest = new Request(this.getListeUrl, {
+			method: "POST",
+			headers: myHeaders,
+			body: body,
+		});
+	
+		const response = await fetch(myRequest);
+		if (response.status != 200) {
+			throw "expected status code to be 200!";
 		}
-
-		resolve(response);
-	};
-  
-	xhr.onerror = () => {
-		reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
-	};
-  
-	const formData = new FormData();
-	formData.append("file", file, metadata.fileName);
-	formData.set("u", getPath());
-  
-	xhr.send(formData);
-});
-
-// used to perform file operations
-const fileActionHandler = async (folder, action, payload) => {
-	console.debug(folder, action, payload);
-	const myHeaders = new Headers();
-
-	const formData = new FormData();
-	formData.set("u", folder);
-	formData.set("a", action);
-	if (payload !== null || payload !== undefined)
-		formData.set("p", JSON.stringify(payload));
-
-	const myRequest = new Request(fileActionUrl, {
-		method: "POST",
-		headers: myHeaders,
-		body: formData,
-	});
-
-	const response = await fetch(myRequest);
-	const jsonData = await response.json();
-	if (response.status != 200) {
-		throw jsonData;
+		const jsonData = await response.json();
+		return jsonData;
 	}
-	return jsonData;
+
+	async postUploadFile(fileName, fileContent, serverLocation, onProgressCb) {
+		return new Promise((resolve, reject) => {
+			Logger.debug("uploading...");
+
+			const xhr = new XMLHttpRequest();
+			xhr.withCredentials = false;
+			xhr.open('POST', this.fileUploadUrl);
+		
+			xhr.upload.onprogress = (e) => {
+				onProgressCb(e.loaded / e.total * 100);
+			};
+		
+			xhr.onload = () => {
+				const response = JSON.parse(xhr.responseText);
+		
+				if (xhr.status != 200) {
+					reject({message: 'HTTP Error: ' + xhr.status, remove: true, ...response});
+					return;
+				}
+		
+				resolve(response);
+			};
+		
+			xhr.onerror = () => {
+				reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+			};
+		
+			const formData = new FormData();
+			formData.append("file", fileContent, fileName);
+			formData.set("u", serverLocation);
+		
+			xhr.send(formData);
+		});
+	}
+
+	async #postFileOperation(folder, action, payload) {
+		Logger.debug(folder, action, payload);
+		const myHeaders = new Headers();
+	
+		const formData = new FormData();
+		formData.set("u", folder);
+		formData.set("a", action);
+		if (payload !== null || payload !== undefined)
+			formData.set("p", JSON.stringify(payload));
+	
+		const myRequest = new Request(this.fileOperationUrl, {
+			method: "POST",
+			headers: myHeaders,
+			body: formData,
+		});
+	
+		const response = await fetch(myRequest);
+		const jsonData = await response.json();
+		if (response.status != 200) {
+			throw jsonData;
+		}
+		return jsonData;
+	}
+
+	async postDeleteFile(folderPath, fileName) {
+		this.#postFileOperation(folderPath, "delete", {f: fileName});
+	}
+
+	async postCreateFolder(folderPath, folderName) {
+		this.#postFileOperation(folderPath, "new-folder", {f: folderName});
+	}
 }
 
-// https://stackoverflow.com/questions/9068156/server-side-file-browsing
-const fileBrowser = (cb) => {
-	const acceptedFileExtensions = acceptedExtensions[insertType].map(e => "." + e).join(",");
-	console.log(acceptedFileExtensions);
-	const input = document.createElement('input');
-	input.setAttribute('type', 'file');
-	input.setAttribute('accept', acceptedFileExtensions);
+class HardCodedClient {
+	#getRandomArbitrary(min, max) {
+		return Math.floor(Math.random() * (max - min) + min);
+	}
 
-	input.addEventListener('change', (e) => {
-		const file = e.target.files[0];
-		const metadata = { fileName: file.name };
-		cb(file, metadata);
-	});
+	async getFileList(path, fileType) {
+		let data = serverDir[path];
+		const timeout = this.#getRandomArbitrary(100, 1000);
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				console.debug(`took ${timeout} ms`);
+				if (data) {
+					resolve({data: data, folder: url});
+				}
+				else {
+					reject({error: "no data available"});
+				}
+			}, timeout)
+		});
+	}
 
-	input.click();
+	async postUploadFile(fileName, fileContent, serverLocation, onProgressCb) {
+		return new Promise((resolve, reject) => {
+			reject({});
+		});
+	}
+
+	async postDeleteFile(folderPath, fileName) {
+		return new Promise((resolve, reject) => {
+			reject({});
+		});
+	}
+
+	async postCreateFolder(folderPath, folderName) {
+		return new Promise((resolve, reject) => {
+			reject({});
+		});
+	}
 }
+
+class LocalFileBrowser {
+	constructor(acceptedFileExtensions, acceptedImageExtensions, acceptedMediaExtensions) {
+		this.acceptedExtensions = {
+			file: acceptedFileExtensions,
+			image: acceptedImageExtensions,
+			media: acceptedMediaExtensions
+		};
+
+		this.fileTypes = Object.keys(this.acceptedExtensions);
+
+		this.input = document.createElement('input');
+		this.input.setAttribute('type', 'file');
+	}
+
+	onAccept(callback) {
+		this.callback = callback;
+		return this;
+	}
+
+	setType(type) {
+		if (!this.fileTypes.includes(type)) {
+			throw "invalid file type. Only [" + this.fileTypes.join(", ") + "] are allowed!";
+		}
+		this.input.setAttribute('accept', this.acceptedExtensions[type].map(e => "." + e).join(","));
+		return this;
+	}
+
+	open() {
+		this.input.onchange = (e) => {
+			const file = e.target.files[0];
+			const metadata = { fileName: file.name };
+			this.callback(file, metadata);
+		};
+		this.input.click();
+	}
+}
+
+const client = new HTTPClient(retrieveListUrl, uploadFileUrl, fileActionUrl);
+const fileService = new FileBrowserService(client);
+const localFileBrowser = new LocalFileBrowser(acceptedLinkFileExtensions, acceptedImageFileExtensions, acceptedMediaFileExtensions);
 
 const showErrorDialog = (errorCode, errorMessage) => {
 	const msg = errorMessageDialog.querySelector("#error-message");
@@ -201,7 +269,19 @@ const showErrorDialog = (errorCode, errorMessage) => {
 	errorMessageDialog.showModal();
 }
 
+const getPath = () => {
+	return pathList.join("/");
+}
+
+const isPreviewable = () => {
+	return true;
+}
+
 const updatePreview = () => {
+	if (!isPreviewable()) {
+		filePreview.innerHTML = "";
+		return;
+	}
 	const filePreview = dialogFilePreview.querySelector(".file-preview");
 	if (selectedElement === null) {
 		filePreview.style.visibility = "hidden";
@@ -229,11 +309,11 @@ const selectElement = (e, i) => {
 	const okButton = dialogRoot.querySelector("#btn-ok");
 	if (selectedElement !== null) {
 		if (selectedElement.index === i) {
-			console.debug(`element already selected`);
+			Logger.debug(`element already selected`);
 		}
 		selectedElement.node.classList.remove(fileSelectedClass);
 	}
-	console.debug(`select element ${i}`);
+	Logger.debug(`select element ${i}`);
 	selectedElement = { 
 		node: e,
 		index: i,
@@ -251,13 +331,13 @@ const selectElement = (e, i) => {
 }
 
 const selectElementFromName = (fileName) => {
-	console.debug("selecting file", fileName);
+	Logger.debug("selecting file", fileName);
 	const index = fetchedData.findIndex(e => e.name === fileName);
 	if (index === -1) {
 		return;
 	}
 	const node = document.querySelector(`#${elementIdPrefix + index}`);
-	console.log(node);
+	Logger.log(node);
 	selectElement(node, index);
 }
 
@@ -274,7 +354,7 @@ const deselectElement = () => {
 }
 
 const navigateToFolder = (folder) => {
-	console.info(`navigating to folder`, folder);
+	Logger.info(`navigating to folder`, folder);
 	deselectElement();
 	dialogFileList.innerHTML = "";
 	pathList.push(folder.data.name);
@@ -282,7 +362,7 @@ const navigateToFolder = (folder) => {
 }
 
 const navigateUp = () => {
-	console.info("navigating up");
+	Logger.info("navigating up");
 	deselectElement();
 	dialogFileList.innerHTML = "";
 	pathList.pop();
@@ -343,12 +423,12 @@ const renderParentFolder = () => {
 }
 
 const closeDialog = () => {
-	console.debug("closing dialog");
+	Logger.debug("closing dialog");
 	dialog.close();
 }
 
 const closeDialogForSuccess = (cb) => {
-	console.debug("closing for success")
+	Logger.debug("closing for success")
 	cb(selectedElement.data.url, {title: selectedElement.data.name});
 	closeDialog();
 }
@@ -367,7 +447,7 @@ const renderContent = (data) => {
 }
 
 const addDialogListeners = (cb) => {
-	console.debug("adding dialog listeners");
+	Logger.debug("adding dialog listeners");
 	const addBtn = dialogRoot.querySelector("#title-bar-button-add");
 	const closeBtn = dialogRoot.querySelector("#title-bar-button-cancel");
 	const nfButton = dialogRoot.querySelector("#title-bar-button-new-folder");
@@ -375,22 +455,34 @@ const addDialogListeners = (cb) => {
 	const okButton = dialogRoot.querySelector("#btn-ok");
 	const cancelButton = dialogRoot.querySelector("#btn-cancel");
 	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
+	const uploadProgressDialog = document.querySelector("#uploadProgressDialog");
+
+	uploadProgressDialog.querySelector("#progress-message").innerHTML = uploadMessage;
 
 	addBtn.onclick = () => {
-		fileBrowser((data, metadata) => {
-			uploadHandler(data, metadata, (percent) => console.log(percent))
-				.then(result => {
-					console.info("upload successful!");
-					console.debug(result);
-					fileToSelect = metadata.fileName;
-					renderExplorerDialog();
-				})
-				.catch(error => {
-					console.info("an error occurred while uploading the file")
-					console.debug(error);
-				});
-		});
-	};
+		const progressBar = uploadProgressDialog.querySelector("#upload-progress");
+		localFileBrowser
+			.setType(insertType)
+			.onAccept((data, metadata) => {
+				uploadProgressDialog.showModal();
+				fileService.uploadFile(metadata.fileName, data, getPath(), (percent) => progressBar.value = percent)
+					.then(result => {
+						uploadProgressDialog.close();
+						Logger.info("upload successful!");
+						Logger.debug(result);
+						fileToSelect = metadata.fileName;
+						renderExplorerDialog();
+					})
+					.catch(error => {
+						Logger.info("an error occurred while uploading the file")
+						Logger.debug(error);
+						uploadProgressDialog.close();
+						showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
+					}
+				)
+			})
+			.open();
+		};
 	closeBtn.onclick = closeDialog;
 	cancelButton.onclick = closeDialog;
 	
@@ -409,14 +501,14 @@ const addDialogListeners = (cb) => {
 
 		ouiBtn.onclick = () => {
 			// call the delete api
-			fileActionHandler(getPath(), "delete", {f: selectedElement.data.name})
+			fileService.deleteFile(getPath(), selectedElement.data.name)
 				.then(response => {
 					confirmDeleteDialog.close();
 					deselectElement();
 					renderExplorerDialog();
 				})
 				.catch(error => {
-					console.error(error);
+					Logger.error(error);
 					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
 				})
 		}
@@ -433,8 +525,8 @@ const addDialogListeners = (cb) => {
 		msg.innerHTML = newFolderMessage;
 
 		submit.onclick = () => {
-			console.log(name.value);
-			fileActionHandler(getPath(), "new-folder", {f: name.value})
+			Logger.log(name.value);
+			fileService.createFolder(getPath(), name.value)
 				.then(response => {
 					name.value = "";
 					newFolderDialog.close();
@@ -442,7 +534,7 @@ const addDialogListeners = (cb) => {
 					renderExplorerDialog();
 				})
 				.catch(error => {
-					console.error(error);
+					Logger.error(error);
 					name.value = "";
 					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
 				})
@@ -456,7 +548,7 @@ const addDialogListeners = (cb) => {
 	}
 
 	okButton.onclick = () => {
-		console.debug(selectedElement);
+		Logger.debug(selectedElement);
 		if (selectedElement === null)
 			return;
 		if (selectedElement.data.type === "folder") {
@@ -467,7 +559,7 @@ const addDialogListeners = (cb) => {
 	};
 
 	elementsContainer.ondblclick = () => {
-		console.debug("db click");
+		Logger.debug("db click");
 		if (selectedElement.data.type === "parentFolder") {
 			navigateUp();
 		} else if (selectedElement.data.type === "folder") {
@@ -479,7 +571,7 @@ const addDialogListeners = (cb) => {
 }
 
 const renderExplorerDialogContent = (data) => {
-	console.debug(data);
+	Logger.debug(data);
 	fetchedData = data;
 	// TODO: potentially sort the data
 	// data.sort((e1, e2) => e1.name.localeCompare(e2.name));
@@ -493,16 +585,16 @@ const renderExplorerDialogContent = (data) => {
 
 const renderExplorerDialog = () => {
 	const path = getPath();
-	console.info(`loading ${path}`);
+	Logger.info(`loading ${path}`);
 	dialogFileList.innerHTML = loaderHTML;
-	fetchDocs(path)
+	fileService.retrieveFileList(path, insertType)
 		.then(response => {
 			updateFolderPath(response.data.folder);
 			renderExplorerDialogContent(response.data.files);
 
 			// we need to select the previously selected file and scroll the element into view
 			if (fileToSelect !== "") {
-				console.debug("selecting file", fileToSelect);
+				Logger.debug("selecting file", fileToSelect);
 				selectElementFromName(fileToSelect);
 				scrollSelectedElementIntoView();
 
@@ -512,7 +604,7 @@ const renderExplorerDialog = () => {
 			}
 		})
 		.catch(error => {
-			console.error(error);
+			Logger.error(error);
 			// we still want to render a folder to give the user the ability
 			// to go up in the directory tree.
 			pathList = [];
@@ -551,8 +643,8 @@ const extractFileInfo = (originalFilePath) => {
 	// save the currently selected file
 	fileToSelect = originalFilePath.substring(i + 1);
 
-	console.debug("previously selected file:", fileToSelect)
-	console.debug(pathList);
+	Logger.debug("previously selected file:", fileToSelect)
+	Logger.debug(pathList);
 }
 
 const shouldSelectPreviousFile = (srcUrl) => {
@@ -568,8 +660,8 @@ const shouldSelectPreviousFile = (srcUrl) => {
 }
 
 const filePickerHandler = (cb, value, meta) => {
-	console.debug(value);
-	console.debug(meta);
+	Logger.debug(value);
+	Logger.debug(meta);
 	/*
 	meta:
 		lien:

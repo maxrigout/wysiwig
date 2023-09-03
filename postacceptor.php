@@ -15,6 +15,17 @@
 		public string $errorCode;
 	}
 
+	$phpFileUploadErrors = array(
+		0 => 'There is no error, the file uploaded with success',
+		1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+		2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+		3 => 'The uploaded file was only partially uploaded',
+		4 => 'No file was uploaded',
+		6 => 'Missing a temporary folder',
+		7 => 'Failed to write file to disk.',
+		8 => 'A PHP extension stopped the file upload.',
+	);
+
 	require_once "params.php";
 
 	function echo_response() {
@@ -114,9 +125,9 @@
 		}
 		echo_response();
 
-	} else {
+	} else if ($_FILES["file"]["error"] > 0) {
 		// Notify editor that the upload failed
-		$debugMessage = "the upload has failed!";
+		$debugMessage = "the upload has failed! Error: " . $phpFileUploadErrors[$_FILES["file"]["error"]];
 		$response->status = "error";
 		$response->error = "cannot upload the file.";
 		$response->errorCode = "PA-05";

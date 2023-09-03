@@ -9,11 +9,11 @@
 		<link href="loader.css" type="text/css" rel="stylesheet">
 	</head>
 	<body>
-		
+
 		<dialog id="explorerDialog">
 			<div id="dialog-root">
 				<div class="dialog-title-bar">
-					<div class="title-bar-path vertical-center align-left">
+					<div class="title-bar-path prevent-select vertical-center align-left">
 					</div>
 					<button class="align-right last-button" id="title-bar-button-cancel">
 						<svg width="24" height="24" viewBox="0 0 24 24"><path d="M17.251 8.157L13.421 12l3.83 3.843a.996.996 0 0 1-1.408 1.408L12 13.421l-3.843 3.83a.996.996 0 0 1-1.408-1.408L10.579 12l-3.83-3.843A.996.996 0 0 1 8.157 6.75L12 10.579l3.843-3.83a.996.996 0 0 1 1.408 1.408z" fill-rule="evenodd"></path></svg>
@@ -28,6 +28,7 @@
 				<div class="dialog-action-buttons">
 					<button id="btn-ok" disabled>Valider</button>
 					<button id="btn-cancel">Annuler</button>
+					<button id="test" onclick="uploadProgressDialog.showModal()">test</button>
 					<button class="align-right" id="title-bar-button-add">
 						<svg width="24" height="24" viewBox="0 0 24 24"><path d="M13 11h6a1 1 0 0 1 0 2h-6v6a1 1 0 0 1-2 0v-6H5a1 1 0 0 1 0-2h6V5a1 1 0 0 1 2 0v6z"></path></svg>
 					</button>
@@ -68,6 +69,13 @@
 				<button id="new-folder-submit">Valider</button>
 				<button id="new-folder-cancel">Annuler</button>
 			</div>
+		</dialog>
+
+		<dialog id="uploadProgressDialog">
+			<div>
+				<label id= "progress-message" for="upload">Downloading progress:</label>
+			</div>
+			<progress id="upload-progress" value="32" max="100"> 32% </progress> 
 		</dialog>
 		  
 

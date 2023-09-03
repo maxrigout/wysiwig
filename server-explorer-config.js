@@ -38,12 +38,13 @@ const basePath = "media";
 // message displayed when attempting to delete a file
 const deleteFileConfirmationMessage = "Etes-vous sur de vouloir supprimer ce fichier ?";
 const newFolderMessage = "Nom du nouveau dossier";
+const uploadMessage = "Upload en cours..."
 
 // url used to fetch the server content
 const retrieveListUrl = "getliste.php";
 // url used to upload files
 const uploadFileUrl = "postacceptor.php"
-// url used to delete files
+// url used to delete files/folders and create new folders
 const fileActionUrl = "actionsfichier.php"
 
 // not used
@@ -65,9 +66,4 @@ const errorCodes = {
 	"AF-N-01": "Impossible de créer le dossier! (erreur serveur)",
 	"AF-N-02": "Le dossier existe déjà!",
 	"AF-N-03": "Nom de dossier invalide!",
-}
-
-const fetchDocs = async (path) => {
-	return await fetchDocs_server(path);
-	// return await fetchDocs_hardCoded(path);
 }
