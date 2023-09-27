@@ -1,6 +1,9 @@
 <?php
 /*
-	v0.0.5
+	v0.0.6
+
+	27/09/2023
+	* fixed some http codes
 
 	* functionality created
 */
@@ -78,7 +81,7 @@
 			$response->status = "error";
 			$response->errorCode = "AF-D-02";
 			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
-			header("HTTP/1.1 500 Internal Server Error");
+			header("HTTP/1.1 400 Bad Request");
 			echo_response();
 			return;
 		}
@@ -107,7 +110,7 @@
 			$response->status = "error";
 			$response->errorCode = "AF-N-03";
 			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
-			header("HTTP/1.1 500 Internal Server Error");
+			header("HTTP/1.1 400 Bad Request");
 			echo_response();
 			return;
 		}

@@ -1,5 +1,10 @@
 /* 
-	v0.0.5
+	v0.0.6
+
+	27/09/2023
+	* added sample button and text input to open the server explorer
+	* added font and font size buttons to tiny mce editor
+
 
 	02/09/2023
 	* added file operations
@@ -70,12 +75,16 @@ class FileBrowserService {
 		return this.client.postUploadFile(fileName, fileContent, serverLocation, onProgressCb);
 	}
 
+	async #fileOperation(folderPath, action, payload) {
+		return this.client.postFileOperation(folderPath, action, payload);
+	}
+
 	async deleteFile(folderPath, fileName) {
-		return this.client.postDeleteFile(folderPath, fileName);
+		return this.#fileOperation(folderPath, "delete", {f: fileName});
 	}
 
 	async createFolder(folderPath, folderName) {
-		return this.client.postCreateFolder(folderPath, folderName);
+		return this.#fileOperation(folderPath, "new-folder", {f: folderName});
 	}
 }
 
@@ -105,10 +114,10 @@ class HTTPClient {
 		});
 	
 		const response = await fetch(myRequest);
-		if (response.status != 200) {
-			throw "expected status code to be 200!";
-		}
 		const jsonData = await response.json();
+		if (response.status != 200) {
+			throw jsonData;
+		}
 		return jsonData;
 	}
 
@@ -147,7 +156,7 @@ class HTTPClient {
 		});
 	}
 
-	async #postFileOperation(folder, action, payload) {
+	async postFileOperation(folder, action, payload) {
 		Logger.debug(folder, action, payload);
 		const myHeaders = new Headers();
 	
@@ -169,14 +178,6 @@ class HTTPClient {
 			throw jsonData;
 		}
 		return jsonData;
-	}
-
-	async postDeleteFile(folderPath, fileName) {
-		this.#postFileOperation(folderPath, "delete", {f: fileName});
-	}
-
-	async postCreateFolder(folderPath, folderName) {
-		this.#postFileOperation(folderPath, "new-folder", {f: folderName});
 	}
 }
 
@@ -607,6 +608,7 @@ const renderExplorerDialog = () => {
 			Logger.error(error);
 			// we still want to render a folder to give the user the ability
 			// to go up in the directory tree.
+			showErrorDialog(error.errorCode, errorCodes[error.errorCode])
 			pathList = [];
 			renderExplorerDialogContent([]);
 			// since an error occured, we don't want to select the file
@@ -663,10 +665,14 @@ const filePickerHandler = (cb, value, meta) => {
 	Logger.debug(value);
 	Logger.debug(meta);
 	/*
+	cb(selectedElement.data.url, {title: selectedElement.data.name});
 	meta:
 		lien:
 			fieldname: "url"
 			filetype: "file"
+			original: {
+				value: ""
+			}
 		image:
 			fieldname: "src"
 			filetype: "image"
@@ -698,7 +704,7 @@ tinymce.init({
       'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
       'media', 'table', 'emoticons', 'template', 'help', 'save',
     ],
-    toolbar: 'undo redo | styles | bold italic underline | forecolor backcolor emoticons | alignleft aligncenter alignright alignjustify | ' +
+    toolbar: 'undo redo | styles | fontfamily fontsize | bold italic underline | forecolor backcolor emoticons | alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist outdent indent | table | link image media  | fullscreen preview | code ' +
       '',
     menubar: false,
@@ -708,3 +714,10 @@ tinymce.init({
 	file_picker_types: 'image,file,media',
 	file_picker_callback: filePickerHandler,
 });
+
+
+document.querySelector("button#myButton").onclick = (e) => {
+	filePickerHandler((url, meta) => {
+		document.querySelector("input#myTextInput").value = url;
+	}, "", { filetype: "unknown" });
+};

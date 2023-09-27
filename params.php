@@ -1,6 +1,6 @@
 <?php
 /*
-	v0.0.5
+	v0.0.6
 */
 
 /***************************************************
@@ -24,7 +24,7 @@ $excludedFiles = array();
 /*************************************************************************
 * Set this flag to false to prevent returning debug info to the client! *
 *************************************************************************/
-$debug_enabled = true;
+$debug_enabled = false;
 
 /*********************************************
 * Change this line to set the upload folder *

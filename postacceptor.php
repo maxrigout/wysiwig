@@ -1,7 +1,10 @@
 <?php
 
 /*
-	v0.0.5
+	v0.0.6
+
+	27/09/2023
+	* fixed some http codes
 */
 
 // https://www.tiny.cloud/docs/advanced/php-upload-handler/#examplepostacceptorphp

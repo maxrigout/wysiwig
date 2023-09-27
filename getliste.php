@@ -1,7 +1,10 @@
 <?php
 
 /*
-	v0.0.5
+	v0.0.6
+
+	27/09/2023
+	* added case for when the file type isn't supported
 */
 
 // error_reporting(E_ERROR | E_PARSE);
@@ -137,6 +140,18 @@ if ($requestedFolder[strlen($requestedFolder) - 1] == '/') {
 }
 
 $filesType = $_POST["type"];
+$extKnown = in_array($filesType, array_keys($includedExtensions));
+
+if (!$extKnown) {
+	$debugMessage = "unable to scan directory: " . $requestedFolder;
+	$response->status = "error";
+	$response->error = "unknown file type: " . $filesType;
+	$response->errorCode = "GL-02";
+	$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+	header("HTTP/1.1 400 Bad Request");
+	echo_response();
+	return;
+}
 
 $scannedFiles = scanDirectory($requestedFolder);
 

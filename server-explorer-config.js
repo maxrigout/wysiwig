@@ -1,5 +1,8 @@
 /*
-	v0.0.5
+	v0.0.6
+
+	27/09/2023
+	* added error message
 
 	02/09/2023
 	* added error messages
@@ -56,6 +59,7 @@ const loaderHTML = `<div class="lds-ring"><div></div><div></div><div></div><div>
 // messages to display when a specific error code is returned
 const errorCodes = {
 	"GL-01": "Impossible de récupérer le liste des fichier! (erreur serveur)",
+	"GL-02": "Type de fichier non reconu",
 	"PA-01": "Nom du fichier invalide!",
 	"PA-02": "Extension non supportée!",
 	"PA-03": "Le fichier existe déjà!",
