@@ -1,22 +1,22 @@
 <?php
-/*
-	v0.0.6
+	/*
+		v0.0.7
 
-	27/09/2023
-	* fixed some http codes
+		31/10/2023
+		* simplified the way to set error messages/codes in the response
+		* moved common stuff to server-explorer-common.php
+		* create request class
 
-	* functionality created
-*/
+		27/09/2023
+		* fixed some http codes
+
+		* functionality created
+	*/
 
 	// error_reporting(E_ERROR | E_PARSE);
-	class Response {
-		public array | null $debug;
-		public string $error;
-		public string $errorCode;
-		public string $status;
-	}
 
 	require_once "params.php";
+	require_once "server-explorer-common.php";
 
 	function is_dir_empty($dir) {
 		$handle = opendir($dir);
@@ -30,17 +30,7 @@
 		return true;
 	}
 
-	function echo_response() {
-		global $debug_enabled, $response;
-		header('Content-Type: application/json; charset=utf-8');
-		if (!$debug_enabled) {
-			$response->debug = null;
-		}
-		echo json_encode($response);
-	}
-
-	$response = new Response();
-	$response->debug = array('_files' => $_FILES, '_server' => $_SERVER, '_post' => $_POST);
+	$response = createResponse();
 
 	if (isset($_SERVER['HTTP_ORIGIN'])) {
 		// same-origin requests won't set an origin. If the origin is set, it must be valid.
@@ -77,10 +67,7 @@
 		if (is_dir($from) && !is_dir_empty($from))
 		{
 			$debugMessage = "directory: " . $from . " is not empty! ";
-			$response->error = "unable to delete file";
-			$response->status = "error";
-			$response->errorCode = "AF-D-02";
-			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			setResponseError($response, "unable to delete file", "AF-D-02", $debugMessage);
 			header("HTTP/1.1 400 Bad Request");
 			echo_response();
 			return;
@@ -88,10 +75,7 @@
 
 		if (!rename($from, $to)) {
 			$debugMessage = "unable to move the file from: " . $from . " to " . $to;
-			$response->error = "unable to delete file";
-			$response->status = "error";
-			$response->errorCode = "AF-D-01";
-			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			setResponseError($response, "unable to delete file", "AF-D-01", $debugMessage);
 			header("HTTP/1.1 500 Internal Server Error");
 			echo_response();
 			return;
@@ -106,10 +90,7 @@
 		// check if the name contains invalid characters
 		if ($folderName == "" || strpbrk($folderName, "\\/?%*:|\"<>.;")) {
 			$debugMessage = "not a valid folder name: " . $folderName;
-			$response->error = "unable to create the folder";
-			$response->status = "error";
-			$response->errorCode = "AF-N-03";
-			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			setResponseError($response, "unable to create the folder", "AF-N-03", $debugMessage);
 			header("HTTP/1.1 400 Bad Request");
 			echo_response();
 			return;
@@ -118,20 +99,14 @@
 		$folderToCreate = $baseFolder . $folder . "/" . $folderName;
 		if (is_dir($folderToCreate)) {
 			$debugMessage = "directory " . $folderToCreate . " already exists!";
-			$response->error = "unable to create the folder";
-			$response->status = "error";
-			$response->errorCode = "AF-N-02";
-			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			setResponseError($response, "unable to create the folder", "AF-N-02", $debugMessage);
 			header("HTTP/1.1 500 Internal Server Error");
 			echo_response();
 			return;
 		}
 		if (!mkdir($folderToCreate, 0777, true)) {
 			$debugMessage = "unable to create the directory: " . $folderToCreate;
-			$response->error = "unable to create the folder";
-			$response->status = "error";
-			$response->errorCode = "AF-N-01";
-			$response->debug = array_merge($response->debug, array("debug-message" => $debugMessage));
+			setResponseError($response, "unable to create the folder", "AF-N-01", $debugMessage);
 			header("HTTP/1.1 500 Internal Server Error");
 			echo_response();
 			return;

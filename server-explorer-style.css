@@ -1,5 +1,8 @@
 /*
-	v0.0.6
+	v0.0.7
+
+	31/10/2023
+	* added width for the search input
 	
 	27/09/2023
 	* made the file explorer dialog fixed size
@@ -17,6 +20,7 @@
 
 #title-bar-search {
 	margin-right: 5px;
+	width: 20ch;
 }
 
 .file-selected {

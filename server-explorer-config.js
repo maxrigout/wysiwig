@@ -1,5 +1,8 @@
 /*
-	v0.0.6
+	v0.0.7
+
+	31/10/2023
+	* added accepted banner and bandeau extensions for file upload
 
 	27/09/2023
 	* added error message
@@ -31,6 +34,8 @@ const defaultFileIconPath = "icons/file_icon.png";
 const acceptedImageFileExtensions = ["gif", "jpg", "jpeg" , "png", "bmp"];
 const acceptedMediaFileExtensions = ["mp4", "m4v"];
 const acceptedLinkFileExtensions = ["pdf", "mscz", "midi", "mdi", "mp3"];
+const acceptedBandeauExtensions = acceptedImageFileExtensions;
+const acceptedBannerExtensions = acceptedImageFileExtensions;
 
 // the host identifying your site without the http or https
 const host = "localhost:3000"
@@ -49,6 +54,8 @@ const retrieveListUrl = "getliste.php";
 const uploadFileUrl = "postacceptor.php"
 // url used to delete files/folders and create new folders
 const fileActionUrl = "actionsfichier.php"
+// url used to search for files
+const fileSearchUrl = "recherchefichier.php"
 
 // not used
 const externalPluginBaseUrl = "../";

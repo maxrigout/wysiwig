@@ -18,7 +18,12 @@
 				<div class="dialog-title-bar">
 					<div class="title-bar-path prevent-select vertical-center align-left">
 					</div>
-					<button class="align-right last-button" id="title-bar-button-cancel">
+					<div class="align-right"></div>
+					<button id="btn-search" class="vertical-center">
+						<svg width="24" height="24" viewBox="0 0 24 24" ><path d="M15.907 17.319a8 8 0 1 1 1.412-1.412c.013.011.026.023.038.036l4.35 4.35a1 1 0 0 1-1.414 1.414l-4.35-4.35a1.016 1.016 0 0 1-.036-.038zM11 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path></svg>
+					</button>
+					<input placeholder="Search" id="title-bar-search" type="text">
+					<button class="last-button" id="title-bar-button-cancel">
 						<svg width="24" height="24" viewBox="0 0 24 24"><path d="M17.251 8.157L13.421 12l3.83 3.843a.996.996 0 0 1-1.408 1.408L12 13.421l-3.843 3.83a.996.996 0 0 1-1.408-1.408L10.579 12l-3.83-3.843A.996.996 0 0 1 8.157 6.75L12 10.579l3.843-3.83a.996.996 0 0 1 1.408 1.408z" fill-rule="evenodd"></path></svg>
 					</button>
 				</div>
@@ -31,7 +36,7 @@
 				<div class="dialog-action-buttons">
 					<button id="btn-ok" disabled>Valider</button>
 					<button id="btn-cancel">Annuler</button>
-					<button id="test" onclick="uploadProgressDialog.showModal()">test</button>
+					<!-- <button id="test" onclick="uploadProgressDialog.showModal()">test</button> -->
 					<button class="align-right" id="title-bar-button-add">
 						<svg width="24" height="24" viewBox="0 0 24 24"><path d="M13 11h6a1 1 0 0 1 0 2h-6v6a1 1 0 0 1-2 0v-6H5a1 1 0 0 1 0-2h6V5a1 1 0 0 1 2 0v6z"></path></svg>
 					</button>

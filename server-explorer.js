@@ -1,5 +1,11 @@
 /* 
-	v0.0.6
+	v0.0.7
+
+	31/10/2023
+	* added ability to search
+	* parent folder gets rendered at the server's request
+	* added new file "types" bandeau and banner
+	* new folder button and search functionality hides when the selected file type is either bandeau or banner
 
 	27/09/2023
 	* added sample button and text input to open the server explorer
@@ -18,7 +24,7 @@
 // images:
 //		png, gif, jpeg
 // media
-//		
+//
 
 const dialog = document.querySelector("#explorerDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
@@ -62,125 +68,7 @@ class Logger {
 	}
 }
 
-class FileBrowserService {
-	constructor(client) {
-		this.client = client;
-	}
-
-	async retrieveFileList(path, fileType) {
-		return this.client.getFileList(path, fileType);
-	}
-
-	async uploadFile(fileName, fileContent, serverLocation, onProgressCb) {
-		return this.client.postUploadFile(fileName, fileContent, serverLocation, onProgressCb);
-	}
-
-	async #fileOperation(folderPath, action, payload) {
-		return this.client.postFileOperation(folderPath, action, payload);
-	}
-
-	async deleteFile(folderPath, fileName) {
-		return this.#fileOperation(folderPath, "delete", {f: fileName});
-	}
-
-	async createFolder(folderPath, folderName) {
-		return this.#fileOperation(folderPath, "new-folder", {f: folderName});
-	}
-}
-
-class HTTPClient {
-	constructor(getListeUrl, fileUploadUrl, fileOperationUrl) {
-		this.getListeUrl = getListeUrl;
-		this.fileUploadUrl = fileUploadUrl;
-		this.fileOperationUrl = fileOperationUrl;
-	}
-
-	async getFileList(path, fileType) {
-		const myHeaders = new Headers();
-
-		// for a JSON body...
-		// const body = JSON.stringify({path: path}).toString();
-		// myHeaders.set("Content-Type", "application/json");
-	
-		// for a form encoded body...
-		const body = new URLSearchParams();
-		body.append("u", path);
-		body.append("type", fileType); // will either be file, media or image
-	
-		const myRequest = new Request(this.getListeUrl, {
-			method: "POST",
-			headers: myHeaders,
-			body: body,
-		});
-	
-		const response = await fetch(myRequest);
-		const jsonData = await response.json();
-		if (response.status != 200) {
-			throw jsonData;
-		}
-		return jsonData;
-	}
-
-	async postUploadFile(fileName, fileContent, serverLocation, onProgressCb) {
-		return new Promise((resolve, reject) => {
-			Logger.debug("uploading...");
-
-			const xhr = new XMLHttpRequest();
-			xhr.withCredentials = false;
-			xhr.open('POST', this.fileUploadUrl);
-		
-			xhr.upload.onprogress = (e) => {
-				onProgressCb(e.loaded / e.total * 100);
-			};
-		
-			xhr.onload = () => {
-				const response = JSON.parse(xhr.responseText);
-		
-				if (xhr.status != 200) {
-					reject({message: 'HTTP Error: ' + xhr.status, remove: true, ...response});
-					return;
-				}
-		
-				resolve(response);
-			};
-		
-			xhr.onerror = () => {
-				reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
-			};
-		
-			const formData = new FormData();
-			formData.append("file", fileContent, fileName);
-			formData.set("u", serverLocation);
-		
-			xhr.send(formData);
-		});
-	}
-
-	async postFileOperation(folder, action, payload) {
-		Logger.debug(folder, action, payload);
-		const myHeaders = new Headers();
-	
-		const formData = new FormData();
-		formData.set("u", folder);
-		formData.set("a", action);
-		if (payload !== null || payload !== undefined)
-			formData.set("p", JSON.stringify(payload));
-	
-		const myRequest = new Request(this.fileOperationUrl, {
-			method: "POST",
-			headers: myHeaders,
-			body: formData,
-		});
-	
-		const response = await fetch(myRequest);
-		const jsonData = await response.json();
-		if (response.status != 200) {
-			throw jsonData;
-		}
-		return jsonData;
-	}
-}
-
+// class responsible for mimicking a server. It should have the same interface as the HTTPClient
 class HardCodedClient {
 	#getRandomArbitrary(min, max) {
 		return Math.floor(Math.random() * (max - min) + min);
@@ -219,14 +107,171 @@ class HardCodedClient {
 			reject({});
 		});
 	}
+
+	async postSearchFile(searchQuery, fileType) {
+		return new Promise((resolve, reject) => {
+			reject({});
+		});
+	}
 }
 
+// class responsible for communicating with the server
+class HTTPClient {
+	constructor(getListeUrl, fileUploadUrl, fileOperationUrl, fileSearchUrl) {
+		this.getListeUrl = getListeUrl;
+		this.fileUploadUrl = fileUploadUrl;
+		this.fileOperationUrl = fileOperationUrl;
+		this.fileSearchUrl = fileSearchUrl;
+	}
+
+	async getFileList(path, fileType) {
+		const myHeaders = new Headers();
+
+		// for a JSON body...
+		// const body = JSON.stringify({path: path}).toString();
+		// myHeaders.set("Content-Type", "application/json");
+	
+		// for a form encoded body...
+		const body = new URLSearchParams();
+		body.append("u", path);
+		body.append("type", fileType); // will either be file, media or image
+	
+		const myRequest = new Request(this.getListeUrl, {
+			method: "POST",
+			headers: myHeaders,
+			body: body,
+		});
+	
+		const response = await fetch(myRequest);
+		const jsonData = await response.json();
+		if (response.status != 200) {
+			throw jsonData;
+		}
+		return jsonData;
+	}
+
+	async postUploadFile(fileName, fileContent, serverLocation, onProgressCb) {
+		return new Promise((resolve, reject) => {
+			console.debug("uploading...");
+
+			const xhr = new XMLHttpRequest();
+			xhr.withCredentials = false;
+			xhr.open('POST', this.fileUploadUrl);
+		
+			xhr.upload.onprogress = (e) => {
+				onProgressCb(e.loaded / e.total * 100);
+			};
+		
+			xhr.onload = () => {
+				const response = JSON.parse(xhr.responseText);
+		
+				if (xhr.status != 200) {
+					reject({message: 'HTTP Error: ' + xhr.status, remove: true, ...response});
+					return;
+				}
+		
+				resolve(response);
+			};
+		
+			xhr.onerror = () => {
+				reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+			};
+		
+			const formData = new FormData();
+			formData.append("file", fileContent, fileName);
+			formData.set("u", serverLocation);
+		
+			xhr.send(formData);
+		});
+	}
+
+	async postFileOperation(folder, action, payload) {
+		console.debug(folder, action, payload);
+		const myHeaders = new Headers();
+	
+		const formData = new FormData();
+		formData.set("u", folder);
+		formData.set("a", action);
+		if (payload !== null || payload !== undefined)
+			formData.set("p", JSON.stringify(payload));
+	
+		const myRequest = new Request(this.fileOperationUrl, {
+			method: "POST",
+			headers: myHeaders,
+			body: formData,
+		});
+	
+		const response = await fetch(myRequest);
+		const jsonData = await response.json();
+		if (response.status != 200) {
+			throw jsonData;
+		}
+		return jsonData;
+	}
+
+	async postSearchFile(searchQuery, fileType) {
+		console.debug(searchQuery, fileType);
+		const myHeaders = new Headers();
+	
+		const formData = new FormData();
+		formData.set("q", searchQuery);
+		formData.set("t", fileType);
+	
+		const myRequest = new Request(this.fileSearchUrl, {
+			method: "POST",
+			headers: myHeaders,
+			body: formData,
+		});
+	
+		const response = await fetch(myRequest);
+		const jsonData = await response.json();
+		if (response.status != 200) {
+			throw jsonData;
+		}
+		return jsonData;
+	}
+}
+
+// the service is 
+class FileBrowserService {
+	constructor(client) {
+		this.client = client;
+	}
+
+	async retrieveFileList(path, fileType) {
+		return this.client.getFileList(path, fileType);
+	}
+
+	async uploadFile(fileName, fileContent, serverLocation, onProgressCb) {
+		return this.client.postUploadFile(fileName, fileContent, serverLocation, onProgressCb);
+	}
+
+	async #fileOperation(folderPath, action, payload) {
+		return this.client.postFileOperation(folderPath, action, payload);
+	}
+
+	async deleteFile(folderPath, fileName) {
+		return this.#fileOperation(folderPath, "delete", {f: fileName});
+	}
+
+	async createFolder(folderPath, folderName) {
+		return this.#fileOperation(folderPath, "new-folder", {f: folderName});
+	}
+
+	async searchFile(searchQuery, fileType) {
+		return this.client.postSearchFile(searchQuery, fileType);
+	}
+}
+
+// class responsible for selecting a file to upload to the server
 class LocalFileBrowser {
-	constructor(acceptedFileExtensions, acceptedImageExtensions, acceptedMediaExtensions) {
+	constructor(acceptedFileExtensions, acceptedImageExtensions, acceptedMediaExtensions, acceptedBandeauExtensions, acceptedBannerExtensions) {
 		this.acceptedExtensions = {
 			file: acceptedFileExtensions,
 			image: acceptedImageExtensions,
-			media: acceptedMediaExtensions
+			media: acceptedMediaExtensions,
+			bandeau: acceptedBandeauExtensions,
+			banner: acceptedBannerExtensions,
 		};
 
 		this.fileTypes = Object.keys(this.acceptedExtensions);
@@ -258,9 +303,9 @@ class LocalFileBrowser {
 	}
 }
 
-const client = new HTTPClient(retrieveListUrl, uploadFileUrl, fileActionUrl);
+const client = new HTTPClient(retrieveListUrl, uploadFileUrl, fileActionUrl, fileSearchUrl);
 const fileService = new FileBrowserService(client);
-const localFileBrowser = new LocalFileBrowser(acceptedLinkFileExtensions, acceptedImageFileExtensions, acceptedMediaFileExtensions);
+const localFileBrowser = new LocalFileBrowser(acceptedLinkFileExtensions, acceptedImageFileExtensions, acceptedMediaFileExtensions, acceptedBandeauExtensions, acceptedBannerExtensions);
 
 const showErrorDialog = (errorCode, errorMessage) => {
 	const msg = errorMessageDialog.querySelector("#error-message");
@@ -301,29 +346,29 @@ const updatePreview = () => {
 	filePreview.innerHTML = `<img src="${selectedElement.data.url}">`;
 }
 
-const updateFolderPath = (path) => {
+const updateTitlePath = (path) => {
 	dialogTitleBarPath.innerHTML = path;
 }
 
-const selectElement = (e, i) => {
+const selectElement = (element, index) => {
 	const delButton = dialogRoot.querySelector("#title-bar-button-sup");
 	const okButton = dialogRoot.querySelector("#btn-ok");
 	if (selectedElement !== null) {
-		if (selectedElement.index === i) {
-			Logger.debug(`element already selected`);
+		if (selectedElement.index === index) {
+			console.debug(`element already selected`);
 		}
 		selectedElement.node.classList.remove(fileSelectedClass);
 	}
-	Logger.debug(`select element ${i}`);
+	console.debug(`select element ${index}`);
 	selectedElement = { 
-		node: e,
-		index: i,
+		node: element,
+		index: index,
 		data: null,
 	};
-	if (i === -1) {
+	if (index === -1) {
 		selectedElement.data = { type: "parentFolder" };
-	} else if (i >= 0 && i < fetchedData.length) {
-		selectedElement.data = fetchedData[i];
+	} else if (index >= 0 && index < fetchedData.length) {
+		selectedElement.data = fetchedData[index];
 	}
 	delButton.disabled = selectedElement.data.type === "parentFolder";
 	okButton.disabled = selectedElement.data.type === "parentFolder";
@@ -332,13 +377,13 @@ const selectElement = (e, i) => {
 }
 
 const selectElementFromName = (fileName) => {
-	Logger.debug("selecting file", fileName);
+	console.debug("selecting file", fileName);
 	const index = fetchedData.findIndex(e => e.name === fileName);
 	if (index === -1) {
 		return;
 	}
 	const node = document.querySelector(`#${elementIdPrefix + index}`);
-	Logger.log(node);
+	console.log(node);
 	selectElement(node, index);
 }
 
@@ -355,7 +400,7 @@ const deselectElement = () => {
 }
 
 const navigateToFolder = (folder) => {
-	Logger.info(`navigating to folder`, folder);
+	console.info(`navigating to folder`, folder);
 	deselectElement();
 	dialogFileList.innerHTML = "";
 	pathList.push(folder.data.name);
@@ -363,11 +408,22 @@ const navigateToFolder = (folder) => {
 }
 
 const navigateUp = () => {
-	Logger.info("navigating up");
+	console.info("navigating up");
 	deselectElement();
 	dialogFileList.innerHTML = "";
 	pathList.pop();
 	renderExplorerDialog();
+}
+
+const closeDialog = () => {
+	console.debug("closing dialog");
+	dialog.close();
+}
+
+const closeDialogForSuccess = (cb) => {
+	console.debug("closing for success")
+	cb(selectedElement.data.url, {title: selectedElement.data.name});
+	closeDialog();
 }
 
 // https://www.w3schools.com/howto/howto_css_image_gallery.asp
@@ -401,13 +457,11 @@ const getFileNameAndIcon = (file, index) => {
 	return { name: file.name, iconPath: iconPath };
 }
 
-const getFolderNameAndIcon = (folder) => {
-	return {name: folder.name, iconPath: folderIconPath};
-}
-
 const getElementNameAndIcon = (element) => {
 	if (element.type === "folder") {
-		return getFolderNameAndIcon(element);
+		return {name: element.name, iconPath: folderIconPath};
+	} else if (element.type === "parentFolder") {
+		return {name: parentFolderName, iconPath: parentFolderIconPath};
 	}
 	return getFileNameAndIcon(element);
 }
@@ -419,36 +473,16 @@ const renderSingleElement = (name, index, iconPath) => {
 	</div>`;
 }
 
-const renderParentFolder = () => {
-	return renderSingleElement(parentFolderName, -1, parentFolderIconPath);
-}
-
-const closeDialog = () => {
-	Logger.debug("closing dialog");
-	dialog.close();
-}
-
-const closeDialogForSuccess = (cb) => {
-	Logger.debug("closing for success")
-	cb(selectedElement.data.url, {title: selectedElement.data.name});
-	closeDialog();
-}
-
 const renderContent = (data) => {
 	const renderedContent = data.map((element, index) => {
 			const { name, iconPath } = getElementNameAndIcon(element);
 			return renderSingleElement(name, index, iconPath);
 		}).join("");
-	// Note: we can actually remove the parent div
-	if (pathList.length === 0) {
-		return `<div class="${fileListClass}">${renderedContent}</div>`;
-	}
-	const renderedParentFolder = renderParentFolder();
-	return `<div class="${fileListClass}">${renderedParentFolder}${renderedContent}</div>`;
+	return `<div class="${fileListClass}">${renderedContent}</div>`;
 }
 
 const addDialogListeners = (cb) => {
-	Logger.debug("adding dialog listeners");
+	console.debug("adding dialog listeners");
 	const addBtn = dialogRoot.querySelector("#title-bar-button-add");
 	const closeBtn = dialogRoot.querySelector("#title-bar-button-cancel");
 	const nfButton = dialogRoot.querySelector("#title-bar-button-new-folder");
@@ -457,6 +491,7 @@ const addDialogListeners = (cb) => {
 	const cancelButton = dialogRoot.querySelector("#btn-cancel");
 	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
 	const uploadProgressDialog = document.querySelector("#uploadProgressDialog");
+	const searchBtn = dialogRoot.querySelector("#btn-search");
 
 	uploadProgressDialog.querySelector("#progress-message").innerHTML = uploadMessage;
 
@@ -469,21 +504,22 @@ const addDialogListeners = (cb) => {
 				fileService.uploadFile(metadata.fileName, data, getPath(), (percent) => progressBar.value = percent)
 					.then(result => {
 						uploadProgressDialog.close();
-						Logger.info("upload successful!");
-						Logger.debug(result);
+						console.info("upload successful!");
+						console.debug(result);
 						fileToSelect = metadata.fileName;
 						renderExplorerDialog();
 					})
 					.catch(error => {
-						Logger.info("an error occurred while uploading the file")
-						Logger.debug(error);
+						console.info("an error occurred while uploading the file");
+						console.debug(error);
 						uploadProgressDialog.close();
 						showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
 					}
 				)
 			})
 			.open();
-		};
+	};
+
 	closeBtn.onclick = closeDialog;
 	cancelButton.onclick = closeDialog;
 	
@@ -509,13 +545,13 @@ const addDialogListeners = (cb) => {
 					renderExplorerDialog();
 				})
 				.catch(error => {
-					Logger.error(error);
+					console.error(error);
 					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
 				})
 		}
 
 		confirmDeleteDialog.showModal();
-	}
+	};
 
 	nfButton.onclick = () => {
 		const msg = newFolderDialog.querySelector("#new-folder-message");
@@ -526,7 +562,7 @@ const addDialogListeners = (cb) => {
 		msg.innerHTML = newFolderMessage;
 
 		submit.onclick = () => {
-			Logger.log(name.value);
+			console.log(name.value);
 			fileService.createFolder(getPath(), name.value)
 				.then(response => {
 					name.value = "";
@@ -535,7 +571,7 @@ const addDialogListeners = (cb) => {
 					renderExplorerDialog();
 				})
 				.catch(error => {
-					Logger.error(error);
+					console.error(error);
 					name.value = "";
 					showErrorDialog(error.errorCode, errorCodes[error.errorCode]);
 				})
@@ -546,10 +582,10 @@ const addDialogListeners = (cb) => {
 		}
 
 		newFolderDialog.showModal();
-	}
+	};
 
 	okButton.onclick = () => {
-		Logger.debug(selectedElement);
+		console.debug(selectedElement);
 		if (selectedElement === null)
 			return;
 		if (selectedElement.data.type === "folder") {
@@ -559,8 +595,31 @@ const addDialogListeners = (cb) => {
 		}
 	};
 
+	searchBtn.onclick = () => {
+		const searchQueryInput = dialogRoot.querySelector("#title-bar-search");
+		const searchQuery = searchQueryInput.value;
+		// if search query is empty, render the dialog as normal
+		if (searchQuery === "") {
+			selectedElement = null;
+			renderExplorerDialog();
+			return;
+		}
+		dialogFileList.innerHTML = loaderHTML;
+		fileService.searchFile(searchQuery, insertType)
+			.then(response => {
+				pathList = [];
+				renderExplorerDialogContent(response.data.results);
+			})
+			.catch(error => {
+				console.error(error);
+				showErrorDialog(error.errorCode, errorCodes[error.errorCode])
+				pathList = [];
+				renderExplorerDialogContent([]);
+			});
+	}
+
 	elementsContainer.ondblclick = () => {
-		Logger.debug("db click");
+		console.debug("db click");
 		if (selectedElement.data.type === "parentFolder") {
 			navigateUp();
 		} else if (selectedElement.data.type === "folder") {
@@ -572,7 +631,7 @@ const addDialogListeners = (cb) => {
 }
 
 const renderExplorerDialogContent = (data) => {
-	Logger.debug(data);
+	console.debug(data);
 	fetchedData = data;
 	// TODO: potentially sort the data
 	// data.sort((e1, e2) => e1.name.localeCompare(e2.name));
@@ -586,16 +645,23 @@ const renderExplorerDialogContent = (data) => {
 
 const renderExplorerDialog = () => {
 	const path = getPath();
-	Logger.info(`loading ${path}`);
+	console.info(`loading ${path}`);
 	dialogFileList.innerHTML = loaderHTML;
 	fileService.retrieveFileList(path, insertType)
 		.then(response => {
-			updateFolderPath(response.data.folder);
+			
+			if (response.data.location !== "") {
+				pathList = response.data.location.split("/");
+			} else {
+				pathList = [];
+			}
+
+			updateTitlePath(response.data.folder);
 			renderExplorerDialogContent(response.data.files);
 
 			// we need to select the previously selected file and scroll the element into view
 			if (fileToSelect !== "") {
-				Logger.debug("selecting file", fileToSelect);
+				console.debug("selecting file", fileToSelect);
 				selectElementFromName(fileToSelect);
 				scrollSelectedElementIntoView();
 
@@ -605,7 +671,7 @@ const renderExplorerDialog = () => {
 			}
 		})
 		.catch(error => {
-			Logger.error(error);
+			console.error(error);
 			// we still want to render a folder to give the user the ability
 			// to go up in the directory tree.
 			showErrorDialog(error.errorCode, errorCodes[error.errorCode])
@@ -645,8 +711,8 @@ const extractFileInfo = (originalFilePath) => {
 	// save the currently selected file
 	fileToSelect = originalFilePath.substring(i + 1);
 
-	Logger.debug("previously selected file:", fileToSelect)
-	Logger.debug(pathList);
+	console.debug("previously selected file:", fileToSelect)
+	console.debug(pathList);
 }
 
 const shouldSelectPreviousFile = (srcUrl) => {
@@ -662,8 +728,8 @@ const shouldSelectPreviousFile = (srcUrl) => {
 }
 
 const filePickerHandler = (cb, value, meta) => {
-	Logger.debug(value);
-	Logger.debug(meta);
+	console.debug(value);
+	console.debug(meta);
 	/*
 	cb(selectedElement.data.url, {title: selectedElement.data.name});
 	meta:
@@ -690,9 +756,24 @@ const filePickerHandler = (cb, value, meta) => {
 		selectedElement = null;
 	}
 
+	// we need to clear the pathList so that we don't request to be taken back to the bandeau/banner 
+	// (which should only be accessed when the user clicks on a specific button)
+	if (previousInsertType === "bandeau" || previousInsertType === "banner") {
+		pathList = [];
+	}
+
 	addDialogListeners(cb);
 
 	dialog.showModal();
+	if (meta.filetype === "bandeau" || meta.filetype === "banner") {
+		document.querySelector("#title-bar-button-new-folder").style.display = "none";
+		document.querySelector("#title-bar-search").style.display = "none";
+		document.querySelector("#btn-search").style.display = "none";
+	} else {
+		document.querySelector("#title-bar-button-new-folder").style.display = "block";
+		document.querySelector("#title-bar-search").style.display = "block";
+		document.querySelector("#btn-search").style.display = "block";
+	}
 	renderExplorerDialog();
 };
 
@@ -704,9 +785,8 @@ tinymce.init({
       'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen', 'insertdatetime',
       'media', 'table', 'emoticons', 'template', 'help', 'save',
     ],
-    toolbar: 'undo redo | styles | fontfamily fontsize | bold italic underline | forecolor backcolor emoticons | alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | table | link image media  | fullscreen preview | code ' +
-      '',
+    toolbar: 'undo redo removeformat | styles | fontfamily fontsize | bold italic underline | forecolor backcolor emoticons | alignleft aligncenter alignright alignjustify | ' +
+      'bullist numlist outdent indent | table | link image media  | fullscreen preview | code ',
     menubar: false,
 	statusbar: false,
 	language: "fr_FR",
@@ -717,7 +797,8 @@ tinymce.init({
 
 
 document.querySelector("button#myButton").onclick = (e) => {
+	selectedElement = null;
 	filePickerHandler((url, meta) => {
 		document.querySelector("input#myTextInput").value = url;
-	}, "", { filetype: "unknown" });
+	}, document.querySelector("input#myTextInput").value, { filetype: "bandeau" });
 };
