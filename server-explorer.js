@@ -50,24 +50,6 @@ let fetchedData;
 let previousInsertType = "";
 let insertType = "";
 
-class Logger {
-	static debug(...data) {
-		console.debug(...data);
-	}
-	static info(...data) {
-		console.info(...data);
-	}
-	static log(...data) {
-		console.log(...data);
-	}
-	static warn(...data) {
-		console.warn(...data);
-	}
-	static error(...data) {
-		console.error(...data);
-	}
-}
-
 // class responsible for mimicking a server. It should have the same interface as the HTTPClient
 class HardCodedClient {
 	#getRandomArbitrary(min, max) {
