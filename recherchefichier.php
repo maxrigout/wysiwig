@@ -147,6 +147,7 @@
 	}
 
 	$request = new Request($_POST);
+	$filesType = $request->filesType;
 
 	$extKnown = in_array($request->filesType, array_keys($includedExtensions));
 

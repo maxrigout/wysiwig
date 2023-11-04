@@ -26,6 +26,89 @@
 // media
 //
 
+const InitServerExplorer = () => {
+	const ui = `
+<dialog id="explorerDialog">
+	<div id="dialog-root">
+		<div class="dialog-title-bar">
+			<div class="title-bar-path prevent-select vertical-center align-left">
+			</div>
+			<div class="align-right"></div>
+			<button id="btn-search" class="vertical-center">
+				<svg width="24" height="24" viewBox="0 0 24 24" ><path d="M15.907 17.319a8 8 0 1 1 1.412-1.412c.013.011.026.023.038.036l4.35 4.35a1 1 0 0 1-1.414 1.414l-4.35-4.35a1.016 1.016 0 0 1-.036-.038zM11 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path></svg>
+			</button>
+			<input placeholder="Search" id="title-bar-search" type="text">
+			<button class="last-button" id="title-bar-button-cancel">
+				<svg width="24" height="24" viewBox="0 0 24 24"><path d="M17.251 8.157L13.421 12l3.83 3.843a.996.996 0 0 1-1.408 1.408L12 13.421l-3.843 3.83a.996.996 0 0 1-1.408-1.408L10.579 12l-3.83-3.843A.996.996 0 0 1 8.157 6.75L12 10.579l3.843-3.83a.996.996 0 0 1 1.408 1.408z" fill-rule="evenodd"></path></svg>
+			</button>
+		</div>
+		<div class="dialog-content">
+			<div class="dialog-file-list"></div>
+			<div class="dialog-file-preview">
+				<div class="vertical-center file-preview"></div>
+			</div>
+		</div>
+		<div class="dialog-action-buttons">
+			<button id="btn-ok" disabled>Valider</button>
+			<button id="btn-cancel">Annuler</button>
+			<!-- <button id="test" onclick="uploadProgressDialog.showModal()">test</button> -->
+			<button class="align-right" id="title-bar-button-add">
+				<svg width="24" height="24" viewBox="0 0 24 24"><path d="M13 11h6a1 1 0 0 1 0 2h-6v6a1 1 0 0 1-2 0v-6H5a1 1 0 0 1 0-2h6V5a1 1 0 0 1 2 0v6z"></path></svg>
+			</button>
+			<button id="title-bar-button-new-folder">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 13H15M12 10V16M12.0627 6.06274L11.9373 5.93726C11.5914 5.59135 11.4184 5.4184 11.2166 5.29472C11.0376 5.18506 10.8425 5.10425 10.6385 5.05526C10.4083 5 10.1637 5 9.67452 5H6.2C5.0799 5 4.51984 5 4.09202 5.21799C3.71569 5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V15.8C3 16.9201 3 17.4802 3.21799 17.908C3.40973 18.2843 3.71569 18.5903 4.09202 18.782C4.51984 19 5.07989 19 6.2 19H17.8C18.9201 19 19.4802 19 19.908 18.782C20.2843 18.5903 20.5903 18.2843 20.782 17.908C21 17.4802 21 16.9201 21 15.8V10.2C21 9.0799 21 8.51984 20.782 8.09202C20.5903 7.71569 20.2843 7.40973 19.908 7.21799C19.4802 7 18.9201 7 17.8 7H14.3255C13.8363 7 13.5917 7 13.3615 6.94474C13.1575 6.89575 12.9624 6.81494 12.7834 6.70528C12.5816 6.5816 12.4086 6.40865 12.0627 6.06274Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+			<button id="btn-gotofile" style="display:none;">
+				-->
+			</button>
+			<button class="last-button" id="title-bar-button-sup" disabled>
+				<!-- <svg height="24" width="21" viewBox="0 0 875 1000"><path d="M0 281.296l0 -68.355q1.953 -37.107 29.295 -62.496t64.449 -25.389l93.744 0l0 -31.248q0 -39.06 27.342 -66.402t66.402 -27.342l312.48 0q39.06 0 66.402 27.342t27.342 66.402l0 31.248l93.744 0q37.107 0 64.449 25.389t29.295 62.496l0 68.355q0 25.389 -18.553 43.943t-43.943 18.553l0 531.216q0 52.731 -36.13 88.862t-88.862 36.13l-499.968 0q-52.731 0 -88.862 -36.13t-36.13 -88.862l0 -531.216q-25.389 0 -43.943 -18.553t-18.553 -43.943zm62.496 0l749.952 0l0 -62.496q0 -13.671 -8.789 -22.46t-22.46 -8.789l-687.456 0q-13.671 0 -22.46 8.789t-8.789 22.46l0 62.496zm62.496 593.712q0 25.389 18.553 43.943t43.943 18.553l499.968 0q25.389 0 43.943 -18.553t18.553 -43.943l0 -531.216l-624.96 0l0 531.216zm62.496 -31.248l0 -406.224q0 -13.671 8.789 -22.46t22.46 -8.789l62.496 0q13.671 0 22.46 8.789t8.789 22.46l0 406.224q0 13.671 -8.789 22.46t-22.46 8.789l-62.496 0q-13.671 0 -22.46 -8.789t-8.789 -22.46zm31.248 0l62.496 0l0 -406.224l-62.496 0l0 406.224zm31.248 -718.704l374.976 0l0 -31.248q0 -13.671 -8.789 -22.46t-22.46 -8.789l-312.48 0q-13.671 0 -22.46 8.789t-8.789 22.46l0 31.248zm124.992 718.704l0 -406.224q0 -13.671 8.789 -22.46t22.46 -8.789l62.496 0q13.671 0 22.46 8.789t8.789 22.46l0 406.224q0 13.671 -8.789 22.46t-22.46 8.789l-62.496 0q-13.671 0 -22.46 -8.789t-8.789 -22.46zm31.248 0l62.496 0l0 -406.224l-62.496 0l0 406.224zm156.24 0l0 -406.224q0 -13.671 8.789 -22.46t22.46 -8.789l62.496 0q13.671 0 22.46 8.789t8.789 22.46l0 406.224q0 13.671 -8.789 22.46t-22.46 8.789l-62.496 0q-13.671 0 -22.46 -8.789t-8.789 -22.46zm31.248 0l62.496 0l0 -406.224l-62.496 0l0 406.224z"/></svg> -->
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" ><path d="M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6M14 10V17M10 10V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+		</div>
+	</div>
+</dialog>
+
+<dialog id="errorMessageDialog">
+	<div id="error-message">message</div>
+	<div id="error-code">code</div>
+	<form method="dialog">
+		<button>Ok</button>
+	</form>
+</dialog>
+
+<dialog id="comfirmDeleteDialog">
+	<div id="delete-file-message">message</div>
+	<div id="delete-file-name">file name</div>
+	<form method="dialog">
+		<button id="btn-delete-oui">Oui</button>
+		<button id="btn-delete-non">Non</button>
+	</form>
+</dialog>
+
+<dialog id="newFolderDialog">
+	<div id="new-folder-message">message</div>
+	<div>
+		<input id="new-folder-name" type="text">
+	</div>
+	<div>
+		<button id="new-folder-submit">Valider</button>
+		<button id="new-folder-cancel">Annuler</button>
+	</div>
+</dialog>
+
+<dialog id="uploadProgressDialog">
+	<div>
+		<label id= "progress-message" for="upload">Downloading progress:</label>
+	</div>
+	<progress id="upload-progress" value="32" max="100"> 32% </progress> 
+</dialog>`
+
+	document.querySelector("#server-explorer-root").innerHTML = ui;
+}
+
+InitServerExplorer();
+
 const dialog = document.querySelector("#explorerDialog");
 const dialogRoot = dialog.querySelector("#dialog-root");
 const dialogTitleBar = dialog.querySelector(".dialog-title-bar");
@@ -49,6 +132,7 @@ let fetchedData;
 // either "insert link", "insert image" or "insert media"
 let previousInsertType = "";
 let insertType = "";
+let isSearch = false;
 
 // class responsible for mimicking a server. It should have the same interface as the HTTPClient
 class HardCodedClient {
@@ -352,8 +436,8 @@ const selectElement = (element, index) => {
 	} else if (index >= 0 && index < fetchedData.length) {
 		selectedElement.data = fetchedData[index];
 	}
-	delButton.disabled = selectedElement.data.type === "parentFolder";
-	okButton.disabled = selectedElement.data.type === "parentFolder";
+	delButton.disabled = (selectedElement.data.type === "parentFolder") || isSearch;
+	okButton.disabled = (selectedElement.data.type === "parentFolder");
 	selectedElement.node.classList.add(fileSelectedClass);
 	updatePreview();
 }
@@ -474,6 +558,7 @@ const addDialogListeners = (cb) => {
 	const elementsContainer = dialogRoot.querySelector(".dialog-file-list");
 	const uploadProgressDialog = document.querySelector("#uploadProgressDialog");
 	const searchBtn = dialogRoot.querySelector("#btn-search");
+	const gotoFileBtn = dialogRoot.querySelector("#btn-gotofile");
 
 	uploadProgressDialog.querySelector("#progress-message").innerHTML = uploadMessage;
 
@@ -536,6 +621,7 @@ const addDialogListeners = (cb) => {
 	};
 
 	nfButton.onclick = () => {
+		// show the new folder dialog
 		const msg = newFolderDialog.querySelector("#new-folder-message");
 		const name = newFolderDialog.querySelector("#new-folder-name");
 		const submit = newFolderDialog.querySelector("#new-folder-submit");
@@ -543,6 +629,7 @@ const addDialogListeners = (cb) => {
 
 		msg.innerHTML = newFolderMessage;
 
+		// this is the new folder dialog's submit button
 		submit.onclick = () => {
 			console.log(name.value);
 			fileService.createFolder(getPath(), name.value)
@@ -580,9 +667,16 @@ const addDialogListeners = (cb) => {
 	searchBtn.onclick = () => {
 		const searchQueryInput = dialogRoot.querySelector("#title-bar-search");
 		const searchQuery = searchQueryInput.value;
+		console.debug(`searching: ${searchQuery}`);
+		selectedElement = null;
 		// if search query is empty, render the dialog as normal
 		if (searchQuery === "") {
+			console.debug("search query is empty, fetching the server files")
 			selectedElement = null;
+			isSearch = false;
+			addBtn.disabled = false;
+			nfButton.disabled = false;
+			gotoFileBtn.style.display = "none";
 			renderExplorerDialog();
 			return;
 		}
@@ -590,14 +684,36 @@ const addDialogListeners = (cb) => {
 		fileService.searchFile(searchQuery, insertType)
 			.then(response => {
 				pathList = [];
+				isSearch = true;
+				addBtn.disabled = isSearch;
+				nfButton.disabled = isSearch;
+				gotoFileBtn.style.display = "block";
 				renderExplorerDialogContent(response.data.results);
 			})
 			.catch(error => {
 				console.error(error);
 				showErrorDialog(error.errorCode, errorCodes[error.errorCode])
 				pathList = [];
+				isSearch = false;
+				addBtn.disabled = isSearch;
+				nfButton.disabled = isSearch;
+				gotoFileBtn.style.display = "none";
 				renderExplorerDialogContent([]);
 			});
+	}
+
+	gotoFileBtn.onclick = () => {
+		console.log("goto file!");
+		console.log(selectedElement.data.url);
+		// const path = selectedElement.data.url;
+		// pathList = path.split("/");
+		// pathList = pathList.slice(1);
+		isSearch = false;
+		addBtn.disabled = isSearch;
+		nfButton.disabled = isSearch;
+		gotoFileBtn.style.display = "none";
+		extractFileInfo(selectedElement.data.url);
+		renderExplorerDialog();
 	}
 
 	elementsContainer.ondblclick = () => {
